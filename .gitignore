@@ -26,6 +26,10 @@ yarn-error.log*
 # Node modules
 node_modules/
 
+# Angular
+.angular/
+.angular/cache/
+
 # Build outputs
 dist/
 build/
