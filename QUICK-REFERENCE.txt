@@ -1,0 +1,145 @@
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           GLE - REFERÊNCIA RÁPIDA DOCKER                     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┌──────────────────────────────────────────────────────────────┐
+│ 🚀 INÍCIO RÁPIDO                                             │
+└──────────────────────────────────────────────────────────────┘
+
+  Primeira vez:
+    ./start.sh
+    
+  ou
+  
+    make install
+
+  Próximas vezes:
+    make up
+
+┌──────────────────────────────────────────────────────────────┐
+│ 📋 COMANDOS ESSENCIAIS                                       │
+└──────────────────────────────────────────────────────────────┘
+
+  make help          Ver todos os comandos
+  make up            Iniciar containers
+  make down          Parar containers  
+  make restart       Reiniciar containers
+  make logs          Ver logs (tempo real)
+  make build         Reconstruir imagens
+  make clean         Limpar tudo
+
+┌──────────────────────────────────────────────────────────────┐
+│ 🗄️ BANCO DE DADOS                                            │
+└──────────────────────────────────────────────────────────────┘
+
+  make db-shell      Acessar PostgreSQL
+  make db-reset      Resetar banco (apaga tudo)
+  
+  Dentro do PostgreSQL:
+    \dt                Listar tabelas
+    \d links          Descrever tabela links
+    SELECT * FROM links;
+    \q                Sair
+
+┌──────────────────────────────────────────────────────────────┐
+│ 💎 BACKEND (Rails)                                           │
+└──────────────────────────────────────────────────────────────┘
+
+  make rails-console    Console Rails interativo
+  make rails-migrate    Executar migrations
+  make rails-seed       Executar seeds
+  make backend-shell    Shell do container
+  make logs-backend     Logs do backend
+
+┌──────────────────────────────────────────────────────────────┐
+│ 🅰️ FRONTEND (Angular)                                        │
+└──────────────────────────────────────────────────────────────┘
+
+  make ng-shell         Shell do container
+  make logs-frontend    Logs do frontend
+  
+  Dentro do container:
+    ng generate component nome
+    npm install pacote
+
+┌──────────────────────────────────────────────────────────────┐
+│ 🌐 URLS DE ACESSO                                            │
+└──────────────────────────────────────────────────────────────┘
+
+  Frontend:  http://localhost:4200
+  Backend:   http://localhost:3000
+  Database:  localhost:5432
+  
+  Endpoints da API:
+    GET  /api/categorias
+    GET  /api/links
+    GET  /api/auditoria
+
+┌──────────────────────────────────────────────────────────────┐
+│ 🗂️ ESTRUTURA DO BANCO                                        │
+└──────────────────────────────────────────────────────────────┘
+
+  Tabelas criadas automaticamente:
+    ✓ categorias     (Organização dos links)
+    ✓ links          (Links cadastrados)
+    ✓ auditoria      (Histórico completo)
+    
+  Features:
+    ✓ Índices otimizados
+    ✓ Triggers automáticos
+    ✓ Views prontas
+    ✓ Dados iniciais
+
+┌──────────────────────────────────────────────────────────────┐
+│ 🔧 TROUBLESHOOTING                                           │
+└──────────────────────────────────────────────────────────────┘
+
+  Porta em uso:
+    Edite o .env e altere a porta
+    
+  Container não inicia:
+    make logs              (ver o erro)
+    make rebuild           (reconstruir tudo)
+    
+  Resetar tudo:
+    make clean
+    make install
+    
+  Ver status:
+    make status
+    docker-compose ps
+
+┌──────────────────────────────────────────────────────────────┐
+│ 📁 ARQUIVOS IMPORTANTES                                      │
+└──────────────────────────────────────────────────────────────┘
+
+  .env                  Variáveis de ambiente
+  docker-compose.yml    Orquestração dos serviços
+  db/init.sql          Script de inicialização do BD
+  Makefile             Comandos simplificados
+  DOCKER.md            Documentação completa
+
+┌──────────────────────────────────────────────────────────────┐
+│ ⚠️ IMPORTANTE                                                 │
+└──────────────────────────────────────────────────────────────┘
+
+  ⚠️  Em produção, altere as credenciais no .env:
+      POSTGRES_PASSWORD=senha_forte
+      
+  ⚠️  Para parar SEM perder dados:
+      make down
+      
+  ⚠️  Para parar e APAGAR dados:
+      make clean
+
+┌──────────────────────────────────────────────────────────────┐
+│ 📚 MAIS INFORMAÇÕES                                          │
+└──────────────────────────────────────────────────────────────┘
+
+  README.md     Documentação do projeto
+  DOCKER.md     Guia completo de Docker
+  make help     Lista de comandos
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃              GLE - Gestão de Link Embras 🚀                  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛

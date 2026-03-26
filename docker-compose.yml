@@ -1,0 +1,80 @@
+services:
+  # Banco de Dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: gle-postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - gle-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend - Ruby on Rails API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gle-backend
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - RAILS_ENV=${RAILS_ENV}
+    ports:
+      - "${RAILS_PORT}:3000"
+    volumes:
+      - ./backend:/app
+      - rails_bundle:/usr/local/bundle
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - gle-network
+    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails db:create db:migrate db:seed && bundle exec rails server -b 0.0.0.0"
+
+  # Frontend - Angular
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gle-frontend
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - API_URL=${API_URL}
+    ports:
+      - "${ANGULAR_PORT}:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - gle-network
+    command: npm start
+
+volumes:
+  postgres_data:
+    driver: local
+  rails_bundle:
+    driver: local
+
+networks:
+  gle-network:
+    driver: bridge

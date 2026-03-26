@@ -1,0 +1,101 @@
+<div class="login-container">
+  <!-- Lado Esquerdo - Login -->
+  <div class="login-left">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="logo-container">
+        <div class="logo-text">
+          <span class="logo-main">GLE</span>
+          <span class="logo-registered">®</span>
+        </div>
+      </div>
+
+      <!-- Título -->
+      <h1 class="login-title">Olá!</h1>
+      <p class="login-subtitle">Por favor, preencha os campos abaixo.</p>
+
+      <!-- Formulário -->
+      <form class="login-form" (ngSubmit)="onLogin()">
+        <!-- Campo CPF/Email -->
+        <div class="form-field">
+          <label for="username">CPF ou e-mail</label>
+          <input 
+            type="text" 
+            id="username"
+            pInputText 
+            [(ngModel)]="username" 
+            name="username"
+            placeholder="jonathan.willian"
+            class="w-full"
+          />
+        </div>
+
+        <!-- Campo Senha -->
+        <div class="form-field">
+          <label for="password">Senha</label>
+          <p-password 
+            [(ngModel)]="password" 
+            name="password"
+            [toggleMask]="true"
+            [feedback]="false"
+            placeholder="••••••••••"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          ></p-password>
+        </div>
+
+        <!-- Links -->
+        <div class="form-links">
+          <a href="#" class="link-cadastro">Não possui uma conta? Cadastre-se</a>
+          <a href="#" class="link-esqueci" (click)="onForgotPassword()">Esqueci minha senha</a>
+        </div>
+
+        <!-- Botão Entrar -->
+        <button 
+          type="submit" 
+          pButton 
+          label="Entrar" 
+          class="btn-entrar"
+        ></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lado Direito - Carrossel -->
+  <div class="login-right">
+    <p-carousel 
+      [value]="slides" 
+      [numVisible]="1" 
+      [numScroll]="1" 
+      [circular]="true"
+      [autoplayInterval]="5000"
+      [showIndicators]="true"
+      [showNavigators]="false"
+    >
+      <ng-template let-slide pTemplate="item">
+        <div class="carousel-slide">
+          <div class="slide-header">
+            <div class="embras-logo">
+              <span class="embras-text">embras.</span>
+            </div>
+            <span class="novidade-badge">NOVIDADE</span>
+          </div>
+          
+          <div class="slide-content">
+            <div class="slide-icon">
+              <div class="gle-icon">
+                <span class="icon-text">GLE</span>
+              </div>
+            </div>
+            
+            <h2 class="slide-title">{{ slide.title }}</h2>
+            <h3 class="slide-subtitle">{{ slide.subtitle }}</h3>
+            <p class="slide-description">{{ slide.description }}</p>
+            
+            <button pButton label="Saiba mais" class="btn-saiba-mais" outlined></button>
+          </div>
+        </div>
+      </ng-template>
+    </p-carousel>
+  </div>
+</div>

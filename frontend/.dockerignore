@@ -1,0 +1,35 @@
+# Ignore Git
+.git
+.gitignore
+
+# Ignore node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore build outputs
+dist/
+build/
+.angular/
+
+# Ignore environment files
+.env*
+!.env.example
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore test coverage
+coverage/
+*.lcov
+
+# Ignore e2e
+e2e/

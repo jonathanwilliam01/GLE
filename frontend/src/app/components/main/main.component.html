@@ -1,0 +1,153 @@
+<div class="main-container">
+  <!-- Header -->
+  <div class="main-header">
+    <div class="header-left">
+      <button 
+        pButton 
+        icon="pi pi-bars" 
+        class="p-button-text"
+        (click)="toggleSidebar()"
+      ></button>
+      <div class="logo">
+        <span class="logo-text">GLE</span>
+        <span class="logo-subtitle">Gestão de Link Embras</span>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <button 
+        pButton 
+        [icon]="darkTheme ? 'pi pi-sun' : 'pi pi-moon'" 
+        class="p-button-text"
+        (click)="toggleTheme()"
+        pTooltip="Alternar Tema"
+      ></button>
+      <button 
+        pButton 
+        icon="pi pi-user" 
+        class="p-button-text"
+        pTooltip="Perfil"
+      ></button>
+      <button 
+        pButton 
+        icon="pi pi-sign-out" 
+        class="p-button-text p-button-danger"
+        (click)="logout()"
+        pTooltip="Sair"
+      ></button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- Sidebar Categorias -->
+    <div class="sidebar" [class.sidebar-collapsed]="!sidebarVisible">
+      <div class="sidebar-header">
+        <h3>Categorias</h3>
+        <button 
+          pButton 
+          icon="pi pi-plus" 
+          class="p-button-sm p-button-rounded p-button-text"
+          pTooltip="Nova Categoria"
+        ></button>
+      </div>
+
+      <div class="categorias-list">
+        <div 
+          *ngFor="let cat of categorias" 
+          class="categoria-item"
+          [class.active]="categoriaSelecionada?.id === cat.id"
+          (click)="selecionarCategoria(cat)"
+        >
+          <i [class]="cat.icon"></i>
+          <span class="categoria-nome">{{ cat.nome }}</span>
+          <span class="categoria-badge">{{ cat.count }}</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <small>{{ categorias.length }} categorias</small>
+      </div>
+    </div>
+
+    <!-- Área Principal - Links -->
+    <div class="content-area">
+      <div class="content-header">
+        <div>
+          <h2>
+            {{ categoriaSelecionada ? categoriaSelecionada.nome : 'Todos os Links' }}
+          </h2>
+          <p class="subtitle">
+            {{ links.length }} links encontrados
+          </p>
+        </div>
+        
+        <div class="content-actions">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input type="text" pInputText placeholder="Buscar links..." />
+          </span>
+          <button 
+            pButton 
+            icon="pi pi-plus" 
+            label="Novo Link"
+            class="p-button-primary"
+            (click)="adicionarLink()"
+          ></button>
+        </div>
+      </div>
+
+      <!-- Grid de Links -->
+      <div class="links-grid">
+        <p-card *ngFor="let link of links" class="link-card">
+          <div class="link-header">
+            <div class="link-icon">
+              <i class="pi pi-link"></i>
+            </div>
+            <div class="link-actions">
+              <button 
+                pButton 
+                icon="pi pi-pencil" 
+                class="p-button-sm p-button-text"
+                (click)="editarLink(link)"
+                pTooltip="Editar"
+              ></button>
+              <button 
+                pButton 
+                icon="pi pi-trash" 
+                class="p-button-sm p-button-text p-button-danger"
+                (click)="excluirLink(link)"
+                pTooltip="Excluir"
+              ></button>
+            </div>
+          </div>
+
+          <h3 class="link-titulo" (click)="acessarLink(link)">
+            {{ link.titulo }}
+          </h3>
+          
+          <div class="link-url">
+            <i class="pi pi-external-link"></i>
+            <a [href]="link.url" target="_blank">{{ link.url }}</a>
+          </div>
+
+          <div class="link-footer">
+            <span class="badge badge-categoria">
+              <i class="pi pi-folder"></i>
+              {{ link.categoria }}
+            </span>
+            <span class="badge badge-area">
+              <i class="pi pi-tag"></i>
+              {{ link.area }}
+            </span>
+            <span class="badge badge-estado" [class.ativo]="link.estado === 'Ativo'">
+              <i class="pi pi-circle-fill"></i>
+              {{ link.estado }}
+            </span>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-toast></p-toast>

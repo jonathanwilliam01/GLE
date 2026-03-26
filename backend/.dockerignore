@@ -1,0 +1,46 @@
+# Ignore Git
+.git
+.gitignore
+
+# Ignore logs
+log/*
+tmp/*
+*.log
+
+# Ignore bundler config
+.bundle
+
+# Ignore all environment files
+.env*
+!.env.example
+
+# Ignore node modules
+node_modules/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore test coverage
+coverage/
+
+# Ignore documentation
+/doc/
+/rdoc/
+
+# Ignore database files
+*.sqlite3
+*.sqlite3-*
+/db/*.sqlite3
+/db/*.sqlite3-*
+
+# Ignore master key
+/config/master.key
+/config/credentials/*.key
