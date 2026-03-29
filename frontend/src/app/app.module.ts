@@ -18,6 +18,9 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CarouselModule } from 'primeng/carousel';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 // Serviços PrimeNG
 import { MessageService } from 'primeng/api';
@@ -54,7 +57,10 @@ import { MainComponent } from './components/main/main.component';
     DialogModule,
     DropdownModule,
     ConfirmDialogModule,
-    CarouselModule
+    CarouselModule,
+    MultiSelectModule,
+    TooltipModule,
+    InputTextareaModule
   ],
   providers: [
     MessageService,

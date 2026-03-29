@@ -1,6 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { CategoriaService } from '../../services/categoria.service';
+import { LinkService } from '../../services/link.service';
+
+interface LinkItem {
+  id: number;
+  titulo: string;
+  url: string;
+  id_secao: number;
+  secao: string;
+  id_categoria: number;
+}
+
+interface AreaTecnica {
+  label: string;
+  value: string;
+}
+
+interface Categoria {
+  id: number;
+  nome: string;
+  icon: string;
+  areas: string[];
+  count: number;
+}
 
 @Component({
   selector: 'app-main',
@@ -10,109 +34,186 @@ import { MenuItem } from 'primeng/api';
 export class MainComponent implements OnInit {
   sidebarVisible: boolean = true;
   darkTheme: boolean = false;
-  
-  menuItems: MenuItem[] = [];
-  
-  categorias = [
-    { id: 1, nome: 'Documentação', icon: 'pi pi-book', count: 5 },
-    { id: 2, nome: 'Ferramentas', icon: 'pi pi-wrench', count: 8 },
-    { id: 3, nome: 'APIs Externas', icon: 'pi pi-cloud', count: 3 },
-    { id: 4, nome: 'Repositórios', icon: 'pi pi-github', count: 12 },
-    { id: 5, nome: 'Tutoriais', icon: 'pi pi-video', count: 6 },
-    { id: 6, nome: 'Monitoramento', icon: 'pi pi-chart-line', count: 4 },
-    { id: 7, nome: 'Segurança', icon: 'pi pi-shield', count: 7 }
+
+  readonly ITEMS_PER_PAGE = 5;
+
+  // Áreas técnicas
+  areasTecnicas: AreaTecnica[] = [
+    { label: 'Tributário', value: 'Tributario' },
+    { label: 'Administrativo/RH', value: 'Administrativo/RH' },
+    { label: 'Suprimentos', value: 'Suprimentos' },
+    { label: 'Financeiro', value: 'Financeiro' },
+    { label: 'Infraestrutura', value: 'Infraestrutura' },
+    { label: 'Desenvolvimento', value: 'Desenvolvimento' }
+  ];
+  areaFiltro: string | null = null;
+
+  // Categorias
+  categorias: Categoria[] = [];
+  carregandoCategorias: boolean = false;
+  categoriaSelecionada: Categoria | null = null;
+
+  // Pesquisa
+  pesquisa: string = '';
+
+  // Paginação por seção
+  paginas: { [secao: string]: number } = {};
+
+  // Modal nova categoria
+  showCategoriaModal: boolean = false;
+  salvandoCategoria: boolean = false;
+  novaCategoria = { nome: '', icon: 'pi pi-folder', areas: [] as string[] };
+
+  iconesPrimeNG = [
+    { label: 'Pasta',          value: 'pi pi-folder' },
+    { label: 'Monitor',        value: 'pi pi-desktop' },
+    { label: 'Prédio',         value: 'pi pi-building' },
+    { label: 'Usuário',        value: 'pi pi-user' },
+    { label: 'Engrenagem',     value: 'pi pi-cog' },
+    { label: 'Link',           value: 'pi pi-link' },
+    { label: 'Arquivo',        value: 'pi pi-file' },
+    { label: 'Globo',          value: 'pi pi-globe' },
+    { label: 'Servidor',       value: 'pi pi-server' },
+    { label: 'Banco de Dados', value: 'pi pi-database' },
+    { label: 'Gráfico Barra',  value: 'pi pi-chart-bar' },
+    { label: 'Gráfico Pizza',  value: 'pi pi-chart-pie' },
+    { label: 'Mapa',           value: 'pi pi-sitemap' },
+    { label: 'Etiqueta',       value: 'pi pi-tag' },
+    { label: 'Escudo',         value: 'pi pi-shield' },
+    { label: 'Código',         value: 'pi pi-code' },
+    { label: 'Nuvem',          value: 'pi pi-cloud' },
+    { label: 'Estrela',        value: 'pi pi-star' },
+    { label: 'Favorito',       value: 'pi pi-bookmark' },
+    { label: 'Casa',           value: 'pi pi-home' },
+    { label: 'Cadeado',        value: 'pi pi-lock' },
+    { label: 'Chave',          value: 'pi pi-key' },
+    { label: 'Envelope',       value: 'pi pi-envelope' },
+    { label: 'Calendário',     value: 'pi pi-calendar' },
+    { label: 'Relógio',        value: 'pi pi-clock' },
+    { label: 'Download',       value: 'pi pi-download' },
+    { label: 'Upload',         value: 'pi pi-upload' },
+    { label: 'Busca',          value: 'pi pi-search' },
+    { label: 'Filtro',         value: 'pi pi-filter' },
+    { label: 'Lista',          value: 'pi pi-list' },
+    { label: 'Tabela',         value: 'pi pi-table' },
+    { label: 'Grade',          value: 'pi pi-th-large' },
+    { label: 'Informação',     value: 'pi pi-info-circle' },
+    { label: 'Atenção',        value: 'pi pi-exclamation-triangle' },
+    { label: 'Check',          value: 'pi pi-check-circle' },
+    { label: 'Câmera',         value: 'pi pi-camera' },
+    { label: 'Imagem',         value: 'pi pi-image' },
   ];
 
-  links = [
-    {
-      id: 1,
-      titulo: 'Documentação PostgreSQL',
-      url: 'https://www.postgresql.org/docs/',
-      categoria: 'Documentação',
-      area: 'Banco de Dados',
-      estado: 'Ativo'
-    },
-    {
-      id: 2,
-      titulo: 'Ruby on Rails Guides',
-      url: 'https://guides.rubyonrails.org/',
-      categoria: 'Documentação',
-      area: 'Backend',
-      estado: 'Ativo'
-    },
-    {
-      id: 3,
-      titulo: 'Documentação Angular',
-      url: 'https://angular.io/docs',
-      categoria: 'Documentação',
-      area: 'Frontend',
-      estado: 'Ativo'
-    },
-    {
-      id: 4,
-      titulo: 'PrimeNG Components',
-      url: 'https://primeng.org/',
-      categoria: 'Ferramentas',
-      area: 'Frontend',
-      estado: 'Ativo'
-    },
-    {
-      id: 5,
-      titulo: 'Repositório GLE',
-      url: 'https://github.com/embras/gle',
-      categoria: 'Repositórios',
-      area: 'Desenvolvimento',
-      estado: 'Ativo'
-    }
-  ];
+  // Modal editar link
+  showEditLinkModal: boolean = false;
+  linkEmEdicao: LinkItem = { id: 0, titulo: '', url: '', id_secao: 0, secao: '', id_categoria: 0 };
 
-  categoriaSelecionada: any = null;
+  // Modal novo link
+  showNovoLinkModal: boolean = false;
+  novoLink: LinkItem = { id: 0, titulo: '', url: '', id_secao: 0, secao: '', id_categoria: 0 };
 
-  constructor(private router: Router) {}
+  // Seções e links
+  hoveredCard: string | null = null;
+  carregandoLinks: boolean = false;
+  links: LinkItem[] = [];
+
+  constructor(
+    private router: Router,
+    private messageService: MessageService,
+    private categoriaService: CategoriaService,
+    private linkService: LinkService
+  ) {}
 
   ngOnInit(): void {
-    this.initMenuItems();
+    this.carregarCategorias();
+    this.carregarLinks();
   }
 
-  initMenuItems(): void {
-    this.menuItems = [
-      {
-        label: 'Início',
-        icon: 'pi pi-home',
-        command: () => this.navegarPara('inicio')
+  carregarCategorias(): void {
+    this.carregandoCategorias = true;
+    this.categoriaService.listar().subscribe({
+      next: (cats: Categoria[]) => {
+        this.categorias = cats;
+        this.carregandoCategorias = false;
       },
-      {
-        label: 'Links',
-        icon: 'pi pi-link',
-        items: [
-          {
-            label: 'Todos os Links',
-            icon: 'pi pi-list',
-            command: () => this.navegarPara('links')
-          },
-          {
-            label: 'Adicionar Link',
-            icon: 'pi pi-plus',
-            command: () => this.adicionarLink()
-          }
-        ]
-      },
-      {
-        label: 'Categorias',
-        icon: 'pi pi-folder',
-        command: () => this.navegarPara('categorias')
-      },
-      {
-        label: 'Auditoria',
-        icon: 'pi pi-history',
-        command: () => this.navegarPara('auditoria')
-      },
-      {
-        label: 'Sair',
-        icon: 'pi pi-sign-out',
-        command: () => this.logout()
+      error: () => {
+        this.carregandoCategorias = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Falha ao carregar categorias.'
+        });
       }
-    ];
+    });
+  }
+
+  carregarLinks(): void {
+    this.carregandoLinks = true;
+    this.linkService.listar().subscribe({
+      next: (lista: any[]) => {
+        this.links = lista;
+        this.carregandoLinks = false;
+      },
+      error: () => {
+        this.carregandoLinks = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Falha ao carregar links.'
+        });
+      }
+    });
+  }
+
+  get secoesParaExibir(): string[] {
+    // Seções em ordem (id_secao) das que possuem links no filtro atual
+    const linksAtivos = this.categoriaSelecionada
+      ? this.links.filter(l => l.id_categoria === this.categoriaSelecionada!.id)
+      : this.links;
+    const seen = new Map<number, string>();
+    linksAtivos.forEach(l => {
+      if (l.secao && !seen.has(l.id_secao)) seen.set(l.id_secao, l.secao);
+    });
+    return Array.from(seen.entries()).sort(([a], [b]) => a - b).map(([, name]) => name);
+  }
+
+  get categoriasFiltradas(): Categoria[] {
+    if (!this.areaFiltro) return this.categorias;
+    return this.categorias.filter(c => c.areas.includes(this.areaFiltro!));
+  }
+
+  getLinksFiltrados(secao: string): LinkItem[] {
+    let filtered = this.links.filter(l => l.secao === secao);
+    if (this.categoriaSelecionada) {
+      filtered = filtered.filter(l => l.id_categoria === this.categoriaSelecionada!.id);
+    }
+    if (this.pesquisa.trim()) {
+      const q = this.pesquisa.toLowerCase();
+      filtered = filtered.filter(l => l.titulo.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
+    }
+    return filtered;
+  }
+
+  getLinksPaginados(secao: string): LinkItem[] {
+    const todos = this.getLinksFiltrados(secao);
+    const pg = this.paginas[secao] ?? 0;
+    return todos.slice(pg * this.ITEMS_PER_PAGE, (pg + 1) * this.ITEMS_PER_PAGE);
+  }
+
+  getTotalPaginas(secao: string): number {
+    return Math.ceil(this.getLinksFiltrados(secao).length / this.ITEMS_PER_PAGE);
+  }
+
+  paginaAnterior(secao: string): void {
+    if (this.paginas[secao] > 0) this.paginas[secao]--;
+  }
+
+  proximaPagina(secao: string): void {
+    if (this.paginas[secao] < this.getTotalPaginas(secao) - 1) this.paginas[secao]++;
+  }
+
+  pesquisar(): void {
+    this.paginas = {};
   }
 
   toggleSidebar(): void {
@@ -124,28 +225,89 @@ export class MainComponent implements OnInit {
     document.body.classList.toggle('dark-theme');
   }
 
-  selecionarCategoria(categoria: any): void {
-    this.categoriaSelecionada = categoria;
+  selecionarCategoria(categoria: Categoria): void {
+    if (this.categoriaSelecionada?.id === categoria.id) {
+      this.categoriaSelecionada = null;
+    } else {
+      this.categoriaSelecionada = categoria;
+    }
+    this.paginas = {};
   }
 
-  navegarPara(rota: string): void {
-    console.log('Navegando para:', rota);
+  getIconLabel(value: string): string {
+    return this.iconesPrimeNG.find(i => i.value === value)?.label ?? value;
   }
 
-  adicionarLink(): void {
-    console.log('Adicionar novo link');
+  filtrarArea(): void {
+    this.categoriaSelecionada = null;
   }
 
-  editarLink(link: any): void {
-    console.log('Editar link:', link);
+  // Modal nova categoria
+  abrirModalCategoria(): void {
+    this.novaCategoria = { nome: '', icon: 'pi pi-folder', areas: [] };
+    this.showCategoriaModal = true;
   }
 
-  excluirLink(link: any): void {
-    console.log('Excluir link:', link);
+  salvarCategoria(): void {
+    if (!this.novaCategoria.nome.trim()) return;
+    this.salvandoCategoria = true;
+    this.categoriaService.criar({
+      nome: this.novaCategoria.nome,
+      icon: this.novaCategoria.icon || 'pi pi-folder',
+      areas: this.novaCategoria.areas
+    }).subscribe({
+      next: () => {
+        this.showCategoriaModal = false;
+        this.salvandoCategoria = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: `Categoria "${this.novaCategoria.nome}" criada com sucesso!`
+        });
+        this.carregarCategorias();
+      },
+      error: () => {
+        this.salvandoCategoria = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Falha ao criar categoria. Tente novamente.'
+        });
+      }
+    });
   }
 
-  acessarLink(link: any): void {
-    window.open(link.url, '_blank');
+  // Copiar link
+  copiarLink(link: LinkItem): void {
+    navigator.clipboard.writeText(link.url);
+    this.messageService.add({ severity: 'info', summary: 'Copiado', detail: `Link de ${link.titulo} copiado!`, life: 2000 });
+  }
+
+  // Modal editar link
+  abrirEditarLink(link: LinkItem): void {
+    this.linkEmEdicao = { ...link };
+    this.showEditLinkModal = true;
+  }
+
+  salvarLink(): void {
+    const idx = this.links.findIndex(l => l.id === this.linkEmEdicao.id);
+    if (idx !== -1) {
+      this.links[idx] = { ...this.linkEmEdicao };
+    }
+    this.showEditLinkModal = false;
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link atualizado!' });
+  }
+
+  // Modal novo link
+  abrirNovoLink(): void {
+    this.novoLink = { id: 0, titulo: '', url: '', id_secao: 0, secao: '', id_categoria: 0 };
+    this.showNovoLinkModal = true;
+  }
+
+  salvarNovoLink(): void {
+    if (!this.novoLink.titulo.trim() || !this.novoLink.url.trim()) return;
+    this.showNovoLinkModal = false;
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link adicionado!' });
   }
 
   logout(): void {

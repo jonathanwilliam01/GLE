@@ -41,19 +41,25 @@
   <div class="main-content">
     <!-- Sidebar Categorias -->
     <div class="sidebar" [class.sidebar-collapsed]="!sidebarVisible">
-      <div class="sidebar-header">
-        <h3>Categorias</h3>
-        <button 
-          pButton 
-          icon="pi pi-plus" 
-          class="p-button-sm p-button-rounded p-button-text"
-          pTooltip="Nova Categoria"
-        ></button>
+      <!-- Filtro de Área Técnica -->
+      <div class="sidebar-filter">
+        <p-dropdown 
+          [options]="areasTecnicas" 
+          [(ngModel)]="areaFiltro"
+          placeholder="Todas as Áreas"
+          [showClear]="true"
+          styleClass="w-full"
+          (onChange)="filtrarArea()"
+        ></p-dropdown>
       </div>
 
       <div class="categorias-list">
+        <div *ngIf="carregandoCategorias" class="categorias-loading">
+          <i class="pi pi-spin pi-spinner"></i>
+          <span>Carregando...</span>
+        </div>
         <div 
-          *ngFor="let cat of categorias" 
+          *ngFor="let cat of categoriasFiltradas" 
           class="categoria-item"
           [class.active]="categoriaSelecionada?.id === cat.id"
           (click)="selecionarCategoria(cat)"
@@ -64,90 +70,319 @@
         </div>
       </div>
 
+      <!-- Rodapé da sidebar -->
       <div class="sidebar-footer">
-        <small>{{ categorias.length }} categorias</small>
+        <button 
+          pButton 
+          icon="pi pi-folder-plus" 
+          label="Nova Categoria"
+          class="btn-nova-categoria"
+          (click)="abrirModalCategoria()"
+        ></button>
       </div>
     </div>
 
-    <!-- Área Principal - Links -->
+    <!-- Área Principal - Cards por Estado -->
     <div class="content-area">
+      <!-- Barra de busca + título -->
       <div class="content-header">
-        <div>
-          <h2>
-            {{ categoriaSelecionada ? categoriaSelecionada.nome : 'Todos os Links' }}
-          </h2>
-          <p class="subtitle">
-            {{ links.length }} links encontrados
-          </p>
-        </div>
-        
-        <div class="content-actions">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
-            <input type="text" pInputText placeholder="Buscar links..." />
-          </span>
+        <h2>{{ categoriaSelecionada ? categoriaSelecionada.nome : 'Todos os Links' }}</h2>
+        <div class="search-bar">
           <button 
             pButton 
             icon="pi pi-plus" 
             label="Novo Link"
             class="p-button-primary"
-            (click)="adicionarLink()"
+            (click)="abrirNovoLink()"
+          ></button>
+          <span class="p-input-icon-left search-input-wrap">
+            <input 
+              type="text" 
+              pInputText 
+              [(ngModel)]="pesquisa"
+              placeholder="Buscar por link..."
+              (keyup.enter)="pesquisar()"
+            />
+          </span>
+          <button 
+            pButton 
+            icon="pi pi-search"
+            class="p-button-outlined"
+            pTooltip="Buscar"
+            (click)="pesquisar()"
           ></button>
         </div>
       </div>
 
-      <!-- Grid de Links -->
-      <div class="links-grid">
-        <p-card *ngFor="let link of links" class="link-card">
-          <div class="link-header">
-            <div class="link-icon">
-              <i class="pi pi-link"></i>
+      <div class="states-grid">
+        <div *ngIf="carregandoLinks" class="links-loading">
+          <i class="pi pi-spin pi-spinner"></i>
+          <span>Carregando links...</span>
+        </div>
+        <div 
+          *ngFor="let secao of secoesParaExibir" 
+          class="state-card"
+          (mouseenter)="hoveredCard = secao"
+          (mouseleave)="hoveredCard = null"
+        >
+          <!-- Header do card -->
+          <div class="state-card-header">
+            <div class="state-card-title">
+              <span class="state-flag">
+                <i class="pi pi-map-marker"></i>
+              </span>
+              <h3>{{ secao }}</h3>
             </div>
-            <div class="link-actions">
-              <button 
-                pButton 
-                icon="pi pi-pencil" 
-                class="p-button-sm p-button-text"
-                (click)="editarLink(link)"
-                pTooltip="Editar"
-              ></button>
-              <button 
-                pButton 
-                icon="pi pi-trash" 
-                class="p-button-sm p-button-text p-button-danger"
-                (click)="excluirLink(link)"
-                pTooltip="Excluir"
-              ></button>
+            <span class="state-count">{{ getLinksFiltrados(secao).length }} itens</span>
+          </div>
+
+          <!-- Lista de cidades (sempre visível, animada no hover) -->
+          <div class="state-card-body">
+            <div class="city-list">
+              <div 
+                class="city-row" 
+                *ngFor="let link of getLinksPaginados(secao)"
+              >
+                <a class="city-name" [href]="link.url" target="_blank" rel="noopener">{{ link.titulo }}</a>
+                <div class="city-actions">
+                  <button 
+                    pButton 
+                    icon="pi pi-copy" 
+                    class="p-button-sm p-button-text"
+                    pTooltip="Copiar Link"
+                    tooltipPosition="top"
+                    (click)="copiarLink(link)"
+                  ></button>
+                  <button 
+                    pButton 
+                    icon="pi pi-pencil" 
+                    class="p-button-sm p-button-text"
+                    pTooltip="Editar"
+                    tooltipPosition="top"
+                    (click)="abrirEditarLink(link)"
+                  ></button>
+                </div>
+              </div>
+
+              <!-- Linhas vazias para manter altura fixa -->
+              <div 
+                class="city-row placeholder" 
+                *ngFor="let i of [].constructor(ITEMS_PER_PAGE - getLinksPaginados(secao).length)"
+              ></div>
+            </div>
+
+            <!-- Hint ao passar mouse -->
+            <div class="hover-hint" *ngIf="hoveredCard !== secao && getLinksFiltrados(secao).length === 0">
+              <i class="pi pi-inbox"></i>
+              <span>Nenhum link encontrado</span>
             </div>
           </div>
 
-          <h3 class="link-titulo" (click)="acessarLink(link)">
-            {{ link.titulo }}
-          </h3>
-          
-          <div class="link-url">
-            <i class="pi pi-external-link"></i>
-            <a [href]="link.url" target="_blank">{{ link.url }}</a>
+          <!-- Paginação -->
+          <div class="state-card-footer">
+            <button 
+              pButton 
+              icon="pi pi-chevron-left" 
+              class="p-button-text p-button-sm p-button-secondary"
+              [disabled]="paginas[secao] === 0"
+              (click)="paginaAnterior(secao)"
+            ></button>
+            <span class="page-info">
+              {{ paginas[secao] + 1 }} / {{ getTotalPaginas(secao) || 1 }}
+            </span>
+            <button 
+              pButton 
+              icon="pi pi-chevron-right" 
+              class="p-button-text p-button-sm p-button-secondary"
+              [disabled]="paginas[secao] >= getTotalPaginas(secao) - 1"
+              (click)="proximaPagina(secao)"
+            ></button>
           </div>
-
-          <div class="link-footer">
-            <span class="badge badge-categoria">
-              <i class="pi pi-folder"></i>
-              {{ link.categoria }}
-            </span>
-            <span class="badge badge-area">
-              <i class="pi pi-tag"></i>
-              {{ link.area }}
-            </span>
-            <span class="badge badge-estado" [class.ativo]="link.estado === 'Ativo'">
-              <i class="pi pi-circle-fill"></i>
-              {{ link.estado }}
-            </span>
-          </div>
-        </p-card>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ===================== MODAL NOVA CATEGORIA ===================== -->
+<p-dialog 
+  header="Nova Categoria" 
+  [(visible)]="showCategoriaModal" 
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '480px' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [draggable]="false"
+  styleClass="gle-dialog"
+>
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-tag"></i> Descrição da Categoria</label>
+      <input 
+        type="text" 
+        pInputText 
+        [(ngModel)]="novaCategoria.nome" 
+        placeholder="Ex: IssOnline Homologação" 
+        class="w-full" 
+      />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-smile"></i> Ícone</label>
+      <p-dropdown
+        [options]="iconesPrimeNG"
+        [(ngModel)]="novaCategoria.icon"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione um ícone"
+        styleClass="w-full icon-picker-dropdown"
+        [appendTo]="'body'"
+        [filter]="true"
+        filterBy="label"
+      >
+        <ng-template pTemplate="selectedItem">
+          <div class="icon-option" *ngIf="novaCategoria.icon">
+            <i [class]="novaCategoria.icon"></i>
+            <span>{{ getIconLabel(novaCategoria.icon) }}</span>
+          </div>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <div class="icon-option">
+            <i [class]="item.value"></i>
+            <span>{{ item.label }}</span>
+            <code class="icon-code">{{ item.value }}</code>
+          </div>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-sitemap"></i> Áreas Técnicas</label>
+      <p-multiSelect 
+        [options]="areasTecnicas" 
+        [(ngModel)]="novaCategoria.areas"
+        placeholder="Selecione uma ou mais áreas"
+        styleClass="w-full"
+        display="chip"
+        [appendTo]="'body'"
+      ></p-multiSelect>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="modal-footer">
+      <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-outlined p-button-secondary" (click)="showCategoriaModal = false" [disabled]="salvandoCategoria"></button>
+      <button pButton type="button" [label]="salvandoCategoria ? 'Salvando...' : 'Criar Categoria'" [icon]="salvandoCategoria ? 'pi pi-spin pi-spinner' : 'pi pi-check'" (click)="salvarCategoria()" [disabled]="salvandoCategoria"></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ===================== MODAL EDITAR LINK ===================== -->
+<p-dialog 
+  header="Editar Link" 
+  [(visible)]="showEditLinkModal" 
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '500px' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [draggable]="false"
+  styleClass="gle-dialog"
+>
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-map-marker"></i> Nome da Cidade</label>
+      <input type="text" pInputText [(ngModel)]="linkEmEdicao.titulo" placeholder="Ex: Pindamonhangaba" class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-link"></i> URL</label>
+      <input type="text" pInputText [(ngModel)]="linkEmEdicao.url" placeholder="https://..." class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-globe"></i> Seção</label>
+      <p-dropdown 
+        [options]="secoesParaExibir" 
+        [(ngModel)]="linkEmEdicao.secao"
+        styleClass="w-full"
+        [appendTo]="'body'"
+      ></p-dropdown>
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-folder"></i> Categoria</label>
+      <p-dropdown 
+        [options]="categorias" 
+        [(ngModel)]="linkEmEdicao.id_categoria"
+        optionLabel="nome"
+        optionValue="id"
+        styleClass="w-full"
+        [appendTo]="'body'"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="modal-footer">
+      <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-outlined p-button-secondary" (click)="showEditLinkModal = false"></button>
+      <button pButton type="button" label="Salvar" icon="pi pi-check" (click)="salvarLink()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- ===================== MODAL NOVO LINK ===================== -->
+<p-dialog 
+  header="Novo Link" 
+  [(visible)]="showNovoLinkModal" 
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '500px' }"
+  [contentStyle]="{ overflow: 'visible' }"
+  [draggable]="false"
+  styleClass="gle-dialog"
+>
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-map-marker"></i> Nome da Cidade</label>
+      <input type="text" pInputText [(ngModel)]="novoLink.titulo" placeholder="Ex: Taubaté" class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-link"></i> URL</label>
+      <input type="text" pInputText [(ngModel)]="novoLink.url" placeholder="https://..." class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-globe"></i> Seção</label>
+      <p-dropdown 
+        [options]="secoesParaExibir" 
+        [(ngModel)]="novoLink.secao"
+        placeholder="Selecione a Seção"
+        styleClass="w-full"
+        [appendTo]="'body'"
+      ></p-dropdown>
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-folder"></i> Categoria</label>
+      <p-dropdown 
+        [options]="categorias" 
+        [(ngModel)]="novoLink.id_categoria"
+        optionLabel="nome"
+        optionValue="id"
+        placeholder="Selecione a categoria"
+        styleClass="w-full"
+        [appendTo]="'body'"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="modal-footer">
+      <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-outlined p-button-secondary" (click)="showNovoLinkModal = false"></button>
+      <button pButton type="button" label="Adicionar Link" icon="pi pi-plus" (click)="salvarNovoLink()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
 
 <p-toast></p-toast>

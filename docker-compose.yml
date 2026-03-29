@@ -45,7 +45,7 @@ services:
         condition: service_healthy
     networks:
       - gle-network
-    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails db:create db:migrate db:seed && bundle exec rails server -b 0.0.0.0"
+    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
 
   # Frontend - Angular
   frontend:

@@ -1,6 +1,7 @@
 .login-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #f5f5f5;
 }
 
@@ -41,12 +42,12 @@
   align-items: flex-start;
   font-size: 72px;
   font-weight: bold;
-  color: #2c3e90;
+  color: #3B82F6;
   letter-spacing: -2px;
 }
 
 .logo-main {
-  background: linear-gradient(135deg, #2c3e90 0%, #4a6bba 100%);
+  background: linear-gradient(135deg, #3B82F6 0%, #4a6bba 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -55,7 +56,7 @@
 .logo-registered {
   font-size: 24px;
   margin-left: 4px;
-  color: #2c3e90;
+  color: #3B82F6;
 }
 
 .login-title {
@@ -90,8 +91,8 @@
       border: 1px solid #d0d0d0;
       
       &:focus {
-        border-color: #5b5fc7;
-        box-shadow: 0 0 0 0.2rem rgba(91, 95, 199, 0.25);
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
       }
     }
   }
@@ -104,18 +105,18 @@
     font-size: 13px;
 
     a {
-      color: #5b5fc7;
+      color: #3B82F6;
       text-decoration: none;
       transition: color 0.2s;
 
       &:hover {
-        color: #4a4eb3;
+        color: #3B82F6;
         text-decoration: underline;
       }
     }
 
     .link-cadastro {
-      color: #5b5fc7;
+      color: #3B82F6;
     }
 
     .link-esqueci {
@@ -128,7 +129,7 @@
     height: 50px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(135deg, #5b5fc7 0%, #7c7fd9 100%);
+    background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 100%);
     border: none;
     border-radius: 6px;
     color: white;
@@ -137,8 +138,8 @@
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(91, 95, 199, 0.3);
-      background: linear-gradient(135deg, #4a4eb3 0%, #6b6ec5 100%);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
     }
 
     &:active {
@@ -150,24 +151,13 @@
 /* ========== LADO DIREITO - CARROSSEL ========== */
 .login-right {
   flex: 1;
-  background: linear-gradient(135deg, #5b5fc7 0%, #8b8fd9 100%);
+  background: #3B82F6;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px;
   position: relative;
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    animation: pulse 15s ease-in-out infinite;
-  }
 }
 
 @keyframes pulse {
@@ -176,15 +166,16 @@
 }
 
 .carousel-slide {
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 20px;
+  background: transparent;
+  border-radius: 0;
   padding: 60px 50px;
-  margin: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  margin: 0;
+  box-shadow: none;
   min-height: 500px;
   display: flex;
   flex-direction: column;
   animation: fadeIn 0.6s ease-out;
+  width: 100%;
 }
 
 @keyframes fadeIn {
@@ -203,13 +194,13 @@
   .embras-text {
     font-size: 24px;
     font-weight: bold;
-    color: #2c3e90;
+    color: white;
   }
 }
 
 .novidade-badge {
-  background: linear-gradient(135deg, #5b5fc7 0%, #8b8fd9 100%);
-  color: white;
+  background: white;
+  color: #3B82F6;
   padding: 6px 16px;
   border-radius: 20px;
   font-size: 11px;
@@ -236,12 +227,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(91, 95, 199, 0.2);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
     
     .icon-text {
       font-size: 48px;
       font-weight: bold;
-      background: linear-gradient(135deg, #5b5fc7 0%, #8b8fd9 100%);
+      background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -252,7 +243,7 @@
 .slide-title {
   font-size: 32px;
   font-weight: bold;
-  color: #5b5fc7;
+  color: white;
   margin-bottom: 8px;
   letter-spacing: -0.5px;
 }
@@ -260,13 +251,13 @@
 .slide-subtitle {
   font-size: 24px;
   font-weight: 600;
-  color: #333;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 20px;
 }
 
 .slide-description {
   font-size: 15px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.6;
   margin-bottom: 30px;
   max-width: 400px;
@@ -276,23 +267,25 @@
   padding: 12px 40px;
   font-size: 14px;
   font-weight: 600;
-  border: 2px solid #5b5fc7;
-  color: #5b5fc7;
+  border: 2px solid white;
+  color: white;
   background: transparent;
   border-radius: 25px;
   transition: all 0.3s ease;
 
   &:hover {
-    background: #5b5fc7;
-    color: white;
+    background: white;
+    color: #3B82F6;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(91, 95, 199, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   }
 }
 
 /* Customização do Carrossel PrimeNG */
 ::ng-deep {
   .p-carousel {
+    padding-bottom: 30px;
+
     .p-carousel-indicators {
       padding: 1rem 0;
       
