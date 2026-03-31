@@ -25,7 +25,7 @@ RUN npm install
 COPY . .
 
 # Expor a porta do Angular
-EXPOSE 4200
+EXPOSE 4005
 
 # Comando padrão
-CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200", "--poll", "2000"]
+CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4005", "--poll", "2000"]

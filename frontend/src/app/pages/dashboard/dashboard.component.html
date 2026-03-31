@@ -1,0 +1,95 @@
+<div class="dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-left">
+      <h2>{{ categoriaSelecionada ? categoriaSelecionada.nome : 'Todos os Links' }}</h2>
+    </div>
+    <div class="header-right">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="pesquisa"
+          placeholder="Buscar por link..."
+          (keyup.enter)="pesquisar()"
+        />
+      </span>
+    </div>
+  </div>
+
+  <!-- Cards por seção -->
+  <div class="states-grid">
+    <div *ngIf="carregandoLinks" class="links-loading">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>Carregando links...</span>
+    </div>
+    <div
+      *ngFor="let secao of secoesParaExibir"
+      class="state-card"
+      (mouseenter)="hoveredCard = secao"
+      (mouseleave)="hoveredCard = null"
+    >
+      <!-- Header do card -->
+      <div class="state-card-header">
+        <div class="state-card-title">
+          <span class="state-flag">
+            <i class="pi pi-map-marker"></i>
+          </span>
+          <h3>{{ secao }}</h3>
+        </div>
+        <span class="state-count">{{ getLinksFiltrados(secao).length }} itens</span>
+      </div>
+
+      <!-- Lista de links -->
+      <div class="state-card-body">
+        <div class="city-list">
+          <div class="city-row" *ngFor="let link of getLinksPaginados(secao)">
+            <a class="city-name" [href]="link.url" target="_blank" rel="noopener">{{ link.titulo }}</a>
+            <div class="city-actions">
+              <button
+                pButton
+                icon="pi pi-copy"
+                class="p-button-sm p-button-text"
+                pTooltip="Copiar Link"
+                tooltipPosition="top"
+                (click)="copiarLink(link)"
+              ></button>
+            </div>
+          </div>
+
+          <div
+            class="city-row placeholder"
+            *ngFor="let i of [].constructor(ITEMS_PER_PAGE - getLinksPaginados(secao).length)"
+          ></div>
+        </div>
+
+        <div class="hover-hint" *ngIf="hoveredCard !== secao && getLinksFiltrados(secao).length === 0">
+          <i class="pi pi-inbox"></i>
+          <span>Nenhum link encontrado</span>
+        </div>
+      </div>
+
+      <!-- Paginação -->
+      <div class="state-card-footer">
+        <button
+          pButton
+          icon="pi pi-chevron-left"
+          class="p-button-text p-button-sm p-button-secondary"
+          [disabled]="paginas[secao] === 0"
+          (click)="paginaAnterior(secao)"
+        ></button>
+        <span class="page-info">
+          {{ (paginas[secao] ?? 0) + 1 }} / {{ getTotalPaginas(secao) || 1 }}
+        </span>
+        <button
+          pButton
+          icon="pi pi-chevron-right"
+          class="p-button-text p-button-sm p-button-secondary"
+          [disabled]="(paginas[secao] ?? 0) >= getTotalPaginas(secao) - 1"
+          (click)="proximaPagina(secao)"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

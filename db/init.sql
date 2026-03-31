@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS auditoria CASCADE;
 DROP TABLE IF EXISTS links CASCADE;
 DROP TABLE IF EXISTS secoes CASCADE;
 DROP TABLE IF EXISTS categorias CASCADE;
+DROP TABLE IF EXISTS usuarios CASCADE;
 
 -- ==================================================
 -- CRIAÇÃO DAS TABELAS
@@ -107,9 +108,34 @@ COMMENT ON COLUMN auditoria.conteudo_antes IS 'Conteúdo do registro antes da al
 COMMENT ON COLUMN auditoria.conteudo_depois IS 'Conteúdo do registro após a alteração (JSON)';
 COMMENT ON COLUMN auditoria.dt_auditoria IS 'Data e hora da ação';
 
+-- 5. Tabela: usuarios (autenticação)
+CREATE TABLE IF NOT EXISTS usuarios (
+    id_usuario SERIAL PRIMARY KEY,
+    usuario VARCHAR(100) NOT NULL UNIQUE,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    password_digest VARCHAR(255) NOT NULL,
+    nivel_acesso INTEGER DEFAULT 1,
+    ativo BOOLEAN DEFAULT TRUE,
+    dt_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dt_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE usuarios IS 'Armazena os usuários do sistema para autenticação';
+COMMENT ON COLUMN usuarios.id_usuario IS 'Identificador único do usuário';
+COMMENT ON COLUMN usuarios.usuario IS 'Login do usuário (CPF ou email)';
+COMMENT ON COLUMN usuarios.nome IS 'Nome completo do usuário';
+COMMENT ON COLUMN usuarios.password_digest IS 'Hash bcrypt da senha';
+COMMENT ON COLUMN usuarios.nivel_acesso IS '1=Consulta, 2=Editor, 3=Admin';
+
 -- ==================================================
 -- DADOS INICIAIS (SEED)
 -- ==================================================
+
+-- Seed: usuario admin (senha: admin123)
+-- Hash bcrypt gerado: $2a$12$LJ3m5BQJGvP4Qm5bFNJiO.2k2JGjJkBCdqHVxvY8fJ0y2RzS4wXeq
+INSERT INTO usuarios (usuario, nome, email, password_digest, nivel_acesso) VALUES
+    ('admin', 'Administrador GLE', 'admin@embras.com.br', '$2a$12$LJ3m5BQJGvP4Qm5bFNJiO.2k2JGjJkBCdqHVxvY8fJ0y2RzS4wXeq', 3);
 
 -- Seed: categorias
 INSERT INTO categorias (ds_categoria, area_tecnica, icone) VALUES

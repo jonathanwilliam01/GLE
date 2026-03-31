@@ -1,19 +1,28 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { inject, Injectable } from '@angular/core';
+import { ApiService } from './api.service';
+import { LinkItem } from '@helpers/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class LinkService {
-  private url = `${environment.apiUrl}/links`;
+  private apiService: ApiService = inject(ApiService);
 
-  constructor(private http: HttpClient) {}
+  listar(params: any = {}): Promise<LinkItem[]> {
+    return this.apiService.get('links', params);
+  }
 
-  listar(idCategoria?: number): Observable<any[]> {
-    let params = new HttpParams();
-    if (idCategoria != null) {
-      params = params.set('id_categoria', String(idCategoria));
-    }
-    return this.http.get<any[]>(this.url, { params });
+  buscarPorId(id: number): Promise<LinkItem> {
+    return this.apiService.get(`links/${id}`);
+  }
+
+  criar(dados: any): Promise<any> {
+    return this.apiService.post('links', dados);
+  }
+
+  atualizar(id: number, dados: any): Promise<any> {
+    return this.apiService.put(`links/${id}`, dados);
+  }
+
+  excluir(id: number): Promise<any> {
+    return this.apiService.delete(`links/${id}`);
   }
 }

@@ -1,0 +1,52 @@
+<aside class="flex flex-column mr-0" [class.collapsed]="collapsed">
+
+  <div>
+    <div class="header">
+      <header class="flex align-items-center justify-content-center">
+        <a routerLink="/">
+          <div class="logo-text" *ngIf="!collapsed">
+            <span class="logo-main">GLE</span>
+            <span class="logo-sub">Gestão de Link Embras</span>
+          </div>
+          <div class="logo-text-small" *ngIf="collapsed">
+            <span class="logo-main">G</span>
+          </div>
+        </a>
+      </header>
+    </div>
+
+    <div *ngIf="!collapsed" class="area-filter-container">
+      <p-dropdown
+        [options]="sidebarMenu.areasTecnicas"
+        [(ngModel)]="sidebarMenu.areaFiltro"
+        placeholder="Todas as Áreas"
+        [showClear]="true"
+        styleClass="w-full"
+        (onChange)="onAreaChange($event)">
+      </p-dropdown>
+    </div>
+
+    <div #panelMenuContainer class="content">
+      <p-panelMenu
+        #panelMenu
+        [model]="sidebarMenu.menus"
+        [multiple]="false"
+        [ngClass]="{'narrow-menu': collapsed}" />
+      <p-menu
+        #subMenu
+        id="subMenu"
+        [popup]="true"
+        [appendTo]="panelMenuContainer"
+        (onShow)="onSubMenuShow($event)" />
+    </div>
+
+    <div class="footer">
+      <button
+        pButton
+        (click)="toggleCollapse()"
+        [icon]="collapsed ? 'pi pi-angle-right' : 'pi pi-angle-left'">
+      </button>
+    </div>
+  </div>
+
+</aside>

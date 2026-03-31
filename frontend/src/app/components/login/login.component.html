@@ -54,8 +54,10 @@
         <button 
           type="submit" 
           pButton 
-          label="Entrar" 
+          [label]="loading ? 'Entrando...' : 'Entrar'"
+          [icon]="loading ? 'pi pi-spin pi-spinner' : ''"
           class="btn-entrar"
+          [disabled]="loading"
         ></button>
       </form>
     </div>
@@ -99,3 +101,4 @@
     </p-carousel>
   </div>
 </div>
+<p-toast />

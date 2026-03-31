@@ -23,5 +23,8 @@ module Gle
           methods: [:get, :post, :put, :patch, :delete, :options, :head]
       end
     end
+
+    # Autoload support classes (JsonWebToken)
+    config.autoload_paths += %W[#{config.root}/app/support]
   end
 end

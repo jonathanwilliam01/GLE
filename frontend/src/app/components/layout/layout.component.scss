@@ -1,0 +1,39 @@
+#master {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 280px auto;
+  grid-template-rows: 72px 1fr 36px;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main-container"
+    "sidebar footer";
+
+  @media screen and (max-width: 1199px) {
+    grid-template-columns: 72px auto;
+  }
+
+  min-width: 1024px;
+  overflow-x: hidden;
+}
+
+.header {
+  grid-area: header;
+  border-bottom: 1px solid var(--surface-100);
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.main-container {
+  grid-area: main-container;
+  border-left: 1px solid var(--surface-100);
+  overflow: auto;
+  padding: 1rem;
+  background-color: var(--surface-50);
+}
+
+.footer {
+  position: relative;
+  grid-area: footer;
+}

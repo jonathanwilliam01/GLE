@@ -1,0 +1,21 @@
+<div class="flex align-items-center justify-content-between h-full mx-3">
+  <div class="flex h-full gap-2 align-items-center">
+    <span class="font-bold text-color">GLE — Gestão de Link Embras</span>
+  </div>
+
+  <div class="flex h-full gap-3 align-items-center">
+    <button
+      pButton
+      pRipple
+      class="p-button-rounded p-button-text py-1 hover:shadow-none focus:shadow-none"
+      pTooltip="Sair"
+      tooltipPosition="left"
+      (click)="logout()">
+      <div class="flex align-items-center gap-2">
+        <div class="user-avatar">{{ userInitials }}</div>
+        <span class="text-color font-medium text-sm">{{ userName }}</span>
+        <i class="pi pi-sign-out text-500"></i>
+      </div>
+    </button>
+  </div>
+</div>

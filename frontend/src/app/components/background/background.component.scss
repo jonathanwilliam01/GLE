@@ -1,0 +1,16 @@
+.background-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #3B82F6 0%, #1e40af 100%);
+  padding: 2rem;
+}
+
+.logo-area {
+  margin-bottom: 2rem;
+
+  .logo-text {
+    font-size: 72px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}

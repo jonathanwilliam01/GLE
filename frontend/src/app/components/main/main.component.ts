@@ -129,40 +129,34 @@ export class MainComponent implements OnInit {
     this.carregarLinks();
   }
 
-  carregarCategorias(): void {
+  async carregarCategorias(): Promise<void> {
     this.carregandoCategorias = true;
-    this.categoriaService.listar().subscribe({
-      next: (cats: Categoria[]) => {
-        this.categorias = cats;
-        this.carregandoCategorias = false;
-      },
-      error: () => {
-        this.carregandoCategorias = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Falha ao carregar categorias.'
-        });
-      }
-    });
+    try {
+      this.categorias = await this.categoriaService.listar();
+    } catch {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Falha ao carregar categorias.'
+      });
+    } finally {
+      this.carregandoCategorias = false;
+    }
   }
 
-  carregarLinks(): void {
+  async carregarLinks(): Promise<void> {
     this.carregandoLinks = true;
-    this.linkService.listar().subscribe({
-      next: (lista: any[]) => {
-        this.links = lista;
-        this.carregandoLinks = false;
-      },
-      error: () => {
-        this.carregandoLinks = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Falha ao carregar links.'
-        });
-      }
-    });
+    try {
+      this.links = await this.linkService.listar();
+    } catch {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Falha ao carregar links.'
+      });
+    } finally {
+      this.carregandoLinks = false;
+    }
   }
 
   get secoesParaExibir(): string[] {
@@ -248,33 +242,31 @@ export class MainComponent implements OnInit {
     this.showCategoriaModal = true;
   }
 
-  salvarCategoria(): void {
+  async salvarCategoria(): Promise<void> {
     if (!this.novaCategoria.nome.trim()) return;
     this.salvandoCategoria = true;
-    this.categoriaService.criar({
-      nome: this.novaCategoria.nome,
-      icon: this.novaCategoria.icon || 'pi pi-folder',
-      areas: this.novaCategoria.areas
-    }).subscribe({
-      next: () => {
-        this.showCategoriaModal = false;
-        this.salvandoCategoria = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: `Categoria "${this.novaCategoria.nome}" criada com sucesso!`
-        });
-        this.carregarCategorias();
-      },
-      error: () => {
-        this.salvandoCategoria = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Erro',
-          detail: 'Falha ao criar categoria. Tente novamente.'
-        });
-      }
-    });
+    try {
+      await this.categoriaService.criar({
+        nome: this.novaCategoria.nome,
+        icon: this.novaCategoria.icon || 'pi pi-folder',
+        areas: this.novaCategoria.areas
+      });
+      this.showCategoriaModal = false;
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Sucesso',
+        detail: `Categoria "${this.novaCategoria.nome}" criada com sucesso!`
+      });
+      this.carregarCategorias();
+    } catch {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Falha ao criar categoria. Tente novamente.'
+      });
+    } finally {
+      this.salvandoCategoria = false;
+    }
   }
 
   // Copiar link

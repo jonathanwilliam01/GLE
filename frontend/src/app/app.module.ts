@@ -2,12 +2,13 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 // PrimeNG Modules
 import { ButtonModule } from 'primeng/button';
+import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
 import { MenubarModule } from 'primeng/menubar';
 import { SidebarModule } from 'primeng/sidebar';
@@ -17,10 +18,11 @@ import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { CarouselModule } from 'primeng/carousel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuModule } from 'primeng/menu';
 
 // Serviços PrimeNG
 import { MessageService } from 'primeng/api';
@@ -28,14 +30,33 @@ import { ConfirmationService } from 'primeng/api';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
+// Components
 import { LoginComponent } from './components/login/login.component';
 import { MainComponent } from './components/main/main.component';
+import { LayoutComponent } from './components/layout/layout.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { TopbarComponent } from './components/topbar/topbar.component';
+import { FooterbarComponent } from './components/footerbar/footerbar.component';
+import { BackgroundComponent } from './components/background/background.component';
+import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+
+// Services
+import { SidebarMenu } from './components/sidebar/sidebar.menu';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    MainComponent
+    MainComponent,
+    LayoutComponent,
+    SidebarComponent,
+    TopbarComponent,
+    FooterbarComponent,
+    BackgroundComponent,
+    BreadcrumbsComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,8 +67,8 @@ import { MainComponent } from './components/main/main.component';
     AppRoutingModule,
     // PrimeNG
     ButtonModule,
+    RippleModule,
     InputTextModule,
-    PasswordModule,
     CardModule,
     MenubarModule,
     SidebarModule,
@@ -57,14 +78,17 @@ import { MainComponent } from './components/main/main.component';
     DialogModule,
     DropdownModule,
     ConfirmDialogModule,
-    CarouselModule,
     MultiSelectModule,
     TooltipModule,
-    InputTextareaModule
+    InputTextareaModule,
+    BreadcrumbModule,
+    MenuModule,
   ],
   providers: [
     MessageService,
-    ConfirmationService
+    ConfirmationService,
+    SidebarMenu,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

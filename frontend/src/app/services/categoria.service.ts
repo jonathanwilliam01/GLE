@@ -1,25 +1,28 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-
-export interface CategoriaPayload {
-  nome: string;
-  icon: string;
-  areas: string[];
-}
+import { inject, Injectable } from '@angular/core';
+import { ApiService } from './api.service';
+import { Categoria } from '@helpers/interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {
-  private url = `${environment.apiUrl}/categorias`;
+  private apiService: ApiService = inject(ApiService);
 
-  constructor(private http: HttpClient) {}
-
-  listar(): Observable<any[]> {
-    return this.http.get<any[]>(this.url);
+  listar(): Promise<Categoria[]> {
+    return this.apiService.get('categorias');
   }
 
-  criar(dados: CategoriaPayload): Observable<any> {
-    return this.http.post<any>(this.url, dados);
+  buscarPorId(id: number): Promise<Categoria> {
+    return this.apiService.get(`categorias/${id}`);
+  }
+
+  criar(dados: { nome: string; icon: string; areas: string[] }): Promise<any> {
+    return this.apiService.post('categorias', dados);
+  }
+
+  atualizar(id: number, dados: { nome: string; icon: string; areas: string[] }): Promise<any> {
+    return this.apiService.put(`categorias/${id}`, dados);
+  }
+
+  excluir(id: number): Promise<any> {
+    return this.apiService.delete(`categorias/${id}`);
   }
 }

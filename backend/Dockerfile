@@ -36,7 +36,7 @@ COPY . .
 RUN mkdir -p tmp/pids tmp/cache tmp/sockets log
 
 # Expor a porta do Rails
-EXPOSE 3000
+EXPOSE 3005
 
 # Comando padrão (pode ser sobrescrito no docker-compose)
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "3005"]

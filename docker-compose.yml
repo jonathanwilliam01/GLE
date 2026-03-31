@@ -36,7 +36,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - RAILS_ENV=${RAILS_ENV}
     ports:
-      - "${RAILS_PORT}:3000"
+      - "${RAILS_PORT}:3005"
     volumes:
       - ./backend:/app
       - rails_bundle:/usr/local/bundle
@@ -45,7 +45,7 @@ services:
         condition: service_healthy
     networks:
       - gle-network
-    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 3005"
 
   # Frontend - Angular
   frontend:
@@ -59,7 +59,7 @@ services:
     environment:
       - API_URL=${API_URL}
     ports:
-      - "${ANGULAR_PORT}:4200"
+      - "${ANGULAR_PORT}:4005"
     volumes:
       - ./frontend:/app
       - /app/node_modules

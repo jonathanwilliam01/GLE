@@ -1,0 +1,22 @@
+<div class="background-container flex flex-column align-items-center justify-content-center">
+  <div class="logo-area">
+    <span class="logo-text">GLE</span>
+  </div>
+
+  <div class="content-area text-center">
+    <h1 class="text-4xl text-white font-bold mb-3">{{ titulo }}</h1>
+    <div class="text-white">
+      <ng-content></ng-content>
+    </div>
+  </div>
+
+  <div *ngIf="showReturn" class="mt-4">
+    <button
+      pButton
+      class="p-button-text text-white"
+      (click)="returnToHome()"
+      icon="pi pi-arrow-left"
+      label="Voltar para tela inicial">
+    </button>
+  </div>
+</div>

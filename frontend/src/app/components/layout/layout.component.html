@@ -1,0 +1,18 @@
+<div id="master" #master>
+  <div class="header">
+    <app-topbar />
+  </div>
+  <div class="sidebar">
+    <app-sidebar (collapseStatus)="getCollapseStatus($event)" />
+  </div>
+  <div class="main-container">
+    <main>
+      <app-breadcrumbs />
+      <router-outlet />
+    </main>
+  </div>
+  <div class="footer">
+    <app-footerbar />
+  </div>
+</div>
+<p-toast />

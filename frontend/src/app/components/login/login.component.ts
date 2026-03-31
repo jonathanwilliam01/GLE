@@ -1,44 +1,20 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '@services/auth.service';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  template: ''
 })
-export class LoginComponent {
-  username: string = '';
-  password: string = '';
+export class LoginComponent implements OnInit {
+  constructor(private authService: AuthService) {}
 
-  slides = [
-    {
-      title: 'BEM-VINDO AO GLE',
-      subtitle: 'Gestão de Link Embras',
-      description: 'Sistema de gerenciamento de links organizados por categorias para facilitar o acesso aos recursos da Embras.',
-      image: 'assets/slide1.jpg'
-    },
-    {
-      title: 'ORGANIZE SEUS LINKS',
-      subtitle: 'Categorias e Áreas Técnicas',
-      description: 'Organize seus links por categorias e áreas técnicas. Acesse rapidamente os recursos que você precisa.',
-      image: 'assets/slide2.jpg'
-    },
-    {
-      title: 'AUDITORIA COMPLETA',
-      subtitle: 'Rastreabilidade Total',
-      description: 'Todas as ações são registradas automaticamente. Histórico completo de alterações disponível.',
-      image: 'assets/slide3.jpg'
+  ngOnInit(): void {
+    if (this.authService.loggedIn) {
+      window.location.href = '/';
+      return;
     }
-  ];
-
-  constructor(private router: Router) {}
-
-  onLogin(): void {
-    // Por enquanto, apenas redireciona para a tela principal
-    this.router.navigate(['/main']);
-  }
-
-  onForgotPassword(): void {
-    alert('Funcionalidade de recuperação de senha em breve!');
+    const returnUrl = encodeURIComponent(window.location.origin);
+    window.location.href = `${environment.loginBaseUrl}/login?returnUrl=${returnUrl}`;
   }
 }
