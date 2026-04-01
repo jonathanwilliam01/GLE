@@ -1,28 +1,4 @@
 services:
-  # Banco de Dados PostgreSQL
-  db:
-    image: postgres:15-alpine
-    container_name: gle-postgres
-    restart: always
-    env_file:
-      - .env
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-      - "${POSTGRES_PORT}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - gle-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Backend - Ruby on Rails API
   backend:
     build:
@@ -33,16 +9,13 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_URL=${DATABASE_URL}
       - RAILS_ENV=${RAILS_ENV}
     ports:
       - "${RAILS_PORT}:3005"
     volumes:
       - ./backend:/app
       - rails_bundle:/usr/local/bundle
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - gle-network
     command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 3005"
@@ -70,8 +43,6 @@ services:
     command: npm start
 
 volumes:
-  postgres_data:
-    driver: local
   rails_bundle:
     driver: local
 

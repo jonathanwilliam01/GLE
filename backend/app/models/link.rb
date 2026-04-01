@@ -1,5 +1,5 @@
 class Link < ApplicationRecord
-  self.table_name  = 'links'
+  self.table_name  = 'gle_links'
   self.primary_key = 'id_link'
   self.record_timestamps = false
 

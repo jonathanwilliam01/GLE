@@ -4,23 +4,25 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { CategoriaService } from '@services/categoria.service';
 import { Categoria, AreaTecnica } from '@helpers/interfaces';
+import { StorageService } from '@services/storage.service';
+
+const AREA_COOKIE_KEY = 'gle_area_filtro';
 
 @Injectable()
 export class SidebarMenu {
   private router: Router = inject(Router);
   private categoriaService: CategoriaService = inject(CategoriaService);
+  private storageService: StorageService = inject(StorageService);
 
   public menus: MenuItem[] = [];
   public categorias: Categoria[] = [];
   public areaFiltro: string | null = null;
 
   public areasTecnicas: AreaTecnica[] = [
-    { label: 'Tributário', value: 'Tributario' },
-    { label: 'Administrativo/RH', value: 'Administrativo/RH' },
-    { label: 'Suprimentos', value: 'Suprimentos' },
-    { label: 'Financeiro', value: 'Financeiro' },
-    { label: 'Infraestrutura', value: 'Infraestrutura' },
-    { label: 'Desenvolvimento', value: 'Desenvolvimento' },
+    { label: 'Tributário', value: 'Tributário' },
+    { label: 'E-Gov', value: 'E-Gov' },
+    { label: 'Geosiap', value: 'Geosiap' },
+    { label: 'Todas', value: 'Todas' },
   ];
 
   private categoriaSelecionada$ = new BehaviorSubject<Categoria | null>(null);
@@ -33,6 +35,7 @@ export class SidebarMenu {
   };
 
   constructor() {
+    this.areaFiltro = this.storageService.getCookie(AREA_COOKIE_KEY);
     this.buildMenus();
   }
 
@@ -60,6 +63,7 @@ export class SidebarMenu {
 
   public filtrarArea(area: string | null) {
     this.areaFiltro = area;
+    this.storageService.setCookie(AREA_COOKIE_KEY, area || '');
     this.selecionarCategoria(null);
     this.buildMenus();
   }

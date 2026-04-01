@@ -12,18 +12,16 @@
 # ==================================================
 
 class Categoria < ApplicationRecord
-  self.table_name  = 'categorias'
+  self.table_name  = 'gle_categorias'
   self.primary_key = 'id_categoria'
 
-  # O banco preenche dt_criacao e dt_atualizacao com DEFAULT CURRENT_TIMESTAMP
   self.record_timestamps = false
 
   validates :ds_categoria, presence: true, length: { maximum: 255 }
 
-  # Conta os links associados a esta categoria
   def links_count
     ActiveRecord::Base.connection
-      .select_value("SELECT COUNT(*) FROM links WHERE id_categoria = #{id_categoria}")
+      .select_value("SELECT COUNT(*) FROM gle_links WHERE id_categoria = #{id_categoria}")
       .to_i
   end
 

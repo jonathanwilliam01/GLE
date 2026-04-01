@@ -24,6 +24,14 @@
         styleClass="w-full"
         (onChange)="onAreaChange($event)">
       </p-dropdown>
+
+      <button
+        pButton
+        icon="pi pi-plus"
+        label="Nova Categoria"
+        class="p-button-sm p-button-outlined w-full mt-2"
+        (click)="onNovaCategoria()">
+      </button>
     </div>
 
     <div #panelMenuContainer class="content">
@@ -50,3 +58,64 @@
   </div>
 
 </aside>
+
+<!-- Modal Nova Categoria -->
+<p-dialog
+  header="Nova Categoria"
+  [(visible)]="showModalCategoria"
+  [modal]="true"
+  [style]="{width: '420px'}"
+  [closable]="true"
+  [draggable]="false">
+
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-tag"></i> Nome</label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="novaCategoriaNome"
+        placeholder="Nome da categoria"
+        class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-star"></i> Ícone (PrimeNG)</label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="novaCategoriaIcon"
+        placeholder="ex: pi pi-globe"
+        class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-briefcase"></i> Áreas Técnicas</label>
+      <p-multiSelect
+        [options]="sidebarMenu.areasTecnicas"
+        [(ngModel)]="novaCategoriaAreas"
+        placeholder="Selecione as áreas"
+        styleClass="w-full"
+        optionLabel="label"
+        optionValue="value">
+      </p-multiSelect>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="showModalCategoria = false">
+    </button>
+    <button
+      pButton
+      label="Salvar"
+      icon="pi pi-check"
+      [loading]="salvandoCategoria"
+      (click)="salvarCategoria()">
+    </button>
+  </ng-template>
+</p-dialog>

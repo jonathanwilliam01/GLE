@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { HttpClientModule } from '@angular/common/http';
 
 // PrimeNG Modules
 import { ButtonModule } from 'primeng/button';
@@ -32,7 +31,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // Components
-import { LoginComponent } from './components/login/login.component';
+
 import { MainComponent } from './components/main/main.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
@@ -48,7 +47,6 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     MainComponent,
     LayoutComponent,
     SidebarComponent,
@@ -88,7 +86,6 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
     MessageService,
     ConfirmationService,
     SidebarMenu,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })
