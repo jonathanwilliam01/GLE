@@ -22,6 +22,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuModule } from 'primeng/menu';
+import { AccordionModule } from 'primeng/accordion';
 
 // Serviços PrimeNG
 import { MessageService } from 'primeng/api';
@@ -40,6 +41,10 @@ import { FooterbarComponent } from './components/footerbar/footerbar.component';
 import { BackgroundComponent } from './components/background/background.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { NovaCategoriaDialogComponent } from './components/sidebar/nova-categoria-dialog/nova-categoria-dialog.component';
+import { NovaSecaoDialogComponent } from './components/sidebar/nova-secao-dialog/nova-secao-dialog.component';
+import { NovoLinkDialogComponent } from './pages/dashboard/novo-link-dialog.component';
+import { CadastrosComponent } from './pages/cadastros/cadastros.component';
 
 // Services
 import { SidebarMenu } from './components/sidebar/sidebar.menu';
@@ -55,6 +60,10 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
     BackgroundComponent,
     BreadcrumbsComponent,
     DashboardComponent,
+    NovaCategoriaDialogComponent,
+    NovaSecaoDialogComponent,
+    NovoLinkDialogComponent,
+    CadastrosComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,6 +90,7 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
     InputTextareaModule,
     BreadcrumbModule,
     MenuModule,
+    AccordionModule,
   ],
   providers: [
     MessageService,

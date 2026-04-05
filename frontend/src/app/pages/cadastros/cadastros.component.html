@@ -1,0 +1,210 @@
+<div class="cadastros">
+  <div class="cadastros-header">
+    <h2>Cadastros</h2>
+  </div>
+
+  <div *ngIf="carregando" class="loading">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Carregando...</span>
+  </div>
+
+  <div *ngIf="!carregando" class="cadastros-content">
+    <!-- ===================== SEÇÕES ===================== -->
+    <div class="section-block">
+      <div class="section-header">
+        <h3>Seções</h3>
+        <button
+          *ngIf="adminService.isAdmin"
+          pButton
+          icon="pi pi-plus"
+          label="Nova Seção"
+          class="p-button-sm"
+          (click)="abrirNovaSecao()">
+        </button>
+      </div>
+
+      <div #gridMenuSecao></div>
+      <p-table
+        [value]="secoes"
+        dataKey="id"
+        styleClass="p-default-table"
+        [customSort]="true"
+        (onSort)="sortSecoes($event)"
+        [scrollable]="true"
+        scrollHeight="flex">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
+            <th pSortableColumn="sigla">Sigla <p-sortIcon field="sigla"></p-sortIcon></th>
+            <th class="col-actions"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-secao>
+          <tr>
+            <td>{{ secao.nome }}</td>
+            <td>{{ secao.sigla || '—' }}</td>
+            <td class="col-actions">
+              <button
+                *ngIf="adminService.isAdmin"
+                pButton
+                icon="pi pi-ellipsis-v"
+                class="p-button-text p-button-sm p-button-secondary"
+                (click)="onMenuSecaoClick($event, secao)">
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3" class="empty-msg">Nenhuma seção cadastrada.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <p-menu #menuSecao [model]="menuSecaoItems" [popup]="true" [appendTo]="gridMenuSecao"></p-menu>
+    </div>
+
+    <!-- ===================== CATEGORIAS ===================== -->
+    <div class="section-block">
+      <div class="section-header">
+        <h3>Categorias</h3>
+        <button
+          *ngIf="adminService.isAdmin"
+          pButton
+          icon="pi pi-plus"
+          label="Nova Categoria"
+          class="p-button-sm"
+          (click)="abrirNovaCategoria()">
+        </button>
+      </div>
+
+      <div #gridMenuCategoria></div>
+      <p-table
+        [value]="categorias"
+        dataKey="id"
+        styleClass="p-default-table"
+        [customSort]="true"
+        (onSort)="sortCategorias($event)"
+        [scrollable]="true"
+        scrollHeight="flex">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="col-icon"></th>
+            <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
+            <th>Áreas</th>
+            <th pSortableColumn="count" class="col-num">Links <p-sortIcon field="count"></p-sortIcon></th>
+            <th class="col-actions"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cat>
+          <tr>
+            <td class="col-icon"><i [class]="cat.icon"></i></td>
+            <td>{{ cat.nome }}</td>
+            <td>
+              <span class="area-chip" *ngFor="let area of cat.areas">{{ area }}</span>
+              <span *ngIf="!cat.areas?.length" class="text-400">—</span>
+            </td>
+            <td class="col-num">{{ cat.count }}</td>
+            <td class="col-actions">
+              <button
+                *ngIf="adminService.isAdmin"
+                pButton
+                icon="pi pi-ellipsis-v"
+                class="p-button-text p-button-sm p-button-secondary"
+                (click)="onMenuCategoriaClick($event, cat)">
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="empty-msg">Nenhuma categoria cadastrada.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <p-menu #menuCategoria [model]="menuCategoriaItems" [popup]="true" [appendTo]="gridMenuCategoria"></p-menu>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DIALOG SEÇÃO ===================== -->
+<p-dialog
+  [header]="secaoEditando ? 'Editar Seção' : 'Nova Seção'"
+  [(visible)]="showDialogSecao"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [closable]="true"
+  [draggable]="false">
+  <div class="dialog-form">
+    <div class="field">
+      <label for="secaoNome">Nome *</label>
+      <input id="secaoNome" type="text" pInputText [(ngModel)]="secaoNome" class="w-full" />
+    </div>
+    <div class="field">
+      <label for="secaoSigla">Sigla</label>
+      <input id="secaoSigla" type="text" pInputText [(ngModel)]="secaoSigla" maxlength="10" class="w-full" />
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="showDialogSecao = false"></button>
+    <button pButton label="Salvar" [disabled]="!secaoNome.trim()" (click)="salvarSecao()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ===================== DIALOG CATEGORIA ===================== -->
+<p-dialog
+  [header]="categoriaEditando ? 'Editar Categoria' : 'Nova Categoria'"
+  [(visible)]="showDialogCategoria"
+  [modal]="true"
+  [style]="{ width: '480px' }"
+  [closable]="true"
+  [draggable]="false">
+  <div class="dialog-form">
+    <div class="field">
+      <label for="catNome">Nome *</label>
+      <input id="catNome" type="text" pInputText [(ngModel)]="categoriaNome" class="w-full" />
+    </div>
+    <div class="field">
+      <label for="catIcon">Ícone</label>
+      <p-dropdown
+        id="catIcon"
+        [options]="iconesDisponiveis"
+        [(ngModel)]="categoriaIcon"
+        optionLabel="label"
+        optionValue="value"
+        [appendTo]="'body'"
+        styleClass="w-full">
+        <ng-template let-item pTemplate="selectedItem">
+          <div class="icon-option">
+            <i [class]="item.value"></i>
+            <span>{{ item.label }}</span>
+          </div>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <div class="icon-option">
+            <i [class]="item.value"></i>
+            <span>{{ item.label }}</span>
+          </div>
+        </ng-template>
+      </p-dropdown>
+    </div>
+    <div class="field">
+      <label for="catAreas">Áreas Técnicas</label>
+      <p-multiSelect
+        id="catAreas"
+        [options]="sidebarMenu.areasTecnicas"
+        [(ngModel)]="categoriaAreas"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione as áreas"
+        [appendTo]="'body'"
+        styleClass="w-full">
+      </p-multiSelect>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="showDialogCategoria = false"></button>
+    <button pButton label="Salvar" [disabled]="!categoriaNome.trim()" (click)="salvarCategoria()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog></p-confirmDialog>

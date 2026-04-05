@@ -2,10 +2,9 @@ import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { AfterViewInit, Component, ElementRef, EventEmitter, inject, OnDestroy, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 import { PanelMenu } from 'primeng/panelmenu';
 import { Menu } from 'primeng/menu';
-import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { SidebarMenu } from './sidebar.menu';
-import { CategoriaService } from '@services/categoria.service';
+import { AdminService } from '@services/admin.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,10 +18,7 @@ export class SidebarComponent implements OnInit, OnDestroy, AfterViewInit {
   clickedMenu: any;
 
   showModalCategoria = false;
-  salvandoCategoria = false;
-  novaCategoriaNome = '';
-  novaCategoriaIcon = 'pi pi-folder';
-  novaCategoriaAreas: string[] = [];
+  showModalSecao = false;
 
   @ViewChild('subMenu') subMenu!: Menu;
   @ViewChild('panelMenu') panelMenu!: PanelMenu;
@@ -32,8 +28,7 @@ export class SidebarComponent implements OnInit, OnDestroy, AfterViewInit {
   private unlistenFns: (() => void)[] = [];
   private breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private renderer: Renderer2 = inject(Renderer2);
-  private messageService: MessageService = inject(MessageService);
-  private categoriaService: CategoriaService = inject(CategoriaService);
+  public adminService: AdminService = inject(AdminService);
   public sidebarMenu: SidebarMenu = inject(SidebarMenu);
 
   ngOnInit() {
@@ -108,37 +103,16 @@ export class SidebarComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onAreaChange(event: any) {
-    this.sidebarMenu.filtrarArea(event.value);
+  get logo() {
+    return `assets/logo${this.collapsed ? '-small' : ''}.svg`;
   }
 
   onNovaCategoria() {
-    this.novaCategoriaNome = '';
-    this.novaCategoriaIcon = 'pi pi-folder';
-    this.novaCategoriaAreas = [];
     this.showModalCategoria = true;
   }
 
-  async salvarCategoria() {
-    if (!this.novaCategoriaNome.trim()) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Informe o nome da categoria.' });
-      return;
-    }
-    this.salvandoCategoria = true;
-    try {
-      await this.categoriaService.criar({
-        nome: this.novaCategoriaNome.trim(),
-        icon: this.novaCategoriaIcon.trim() || 'pi pi-folder',
-        areas: this.novaCategoriaAreas,
-      });
-      this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Categoria criada.' });
-      this.showModalCategoria = false;
-      await this.sidebarMenu.carregarCategorias();
-    } catch {
-      this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao criar categoria.' });
-    } finally {
-      this.salvandoCategoria = false;
-    }
+  onNovaSecao() {
+    this.showModalSecao = true;
   }
 
   toggleCollapse() {

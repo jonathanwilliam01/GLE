@@ -1,7 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { AdminService } from '@services/admin.service';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './topbar.component.html',
+  styleUrls: ['./topbar.component.scss'],
 })
-export class TopbarComponent {}
+export class TopbarComponent {
+  public adminService: AdminService = inject(AdminService);
+
+  showLogin = false;
+  user = '';
+  senha = '';
+  logging = false;
+  loginError = false;
+
+  async doLogin() {
+    this.loginError = false;
+    this.logging = true;
+    const ok = await this.adminService.login(this.user, this.senha);
+    this.logging = false;
+    if (ok) {
+      this.showLogin = false;
+      this.user = '';
+      this.senha = '';
+    } else {
+      this.loginError = true;
+    }
+  }
+}

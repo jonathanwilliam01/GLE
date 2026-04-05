@@ -1,0 +1,76 @@
+<p-dialog
+  header="Nova Categoria"
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [style]="{width: '420px'}"
+  [closable]="true"
+  [draggable]="false">
+
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-tag"></i> Nome</label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="nome"
+        placeholder="Nome da categoria"
+        class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-star"></i> Ícone</label>
+      <p-dropdown
+        [options]="iconesDisponiveis"
+        [(ngModel)]="icon"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione um ícone"
+        styleClass="w-full"
+        [appendTo]="'body'">
+        <ng-template pTemplate="selectedItem">
+          <div class="icon-option" *ngIf="icon">
+            <i [class]="icon"></i>
+            <span>{{ getIconLabel(icon) }}</span>
+          </div>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <div class="icon-option">
+            <i [class]="item.value"></i>
+            <span>{{ item.label }}</span>
+          </div>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-briefcase"></i> Áreas Técnicas</label>
+      <p-multiSelect
+        [options]="sidebarMenu.areasTecnicas"
+        [(ngModel)]="areas"
+        placeholder="Selecione as áreas"
+        styleClass="w-full"
+        optionLabel="label"
+        optionValue="value"
+        [appendTo]="'body'">
+      </p-multiSelect>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="cancelar()">
+    </button>
+    <button
+      pButton
+      label="Salvar"
+      icon="pi pi-check"
+      [loading]="salvando"
+      (click)="salvar()">
+    </button>
+  </ng-template>
+</p-dialog>

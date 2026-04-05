@@ -1,0 +1,75 @@
+<p-dialog
+  header="Novo Link"
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [style]="{width: '480px'}"
+  [contentStyle]="{ overflow: 'visible' }"
+  [closable]="true"
+  [draggable]="false">
+
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-tag"></i> Título <span class="required">*</span></label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="titulo"
+        placeholder="Nome do link"
+        class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-link"></i> URL <span class="required">*</span></label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="url"
+        placeholder="https://..."
+        class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-folder"></i> Categoria <span class="required">*</span></label>
+      <p-dropdown
+        [options]="categorias"
+        [(ngModel)]="id_categoria"
+        optionLabel="nome"
+        optionValue="id"
+        placeholder="Selecione a categoria"
+        styleClass="w-full"
+        [appendTo]="'body'">
+      </p-dropdown>
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-map-marker"></i> Seção <span class="required">*</span></label>
+      <p-dropdown
+        [options]="secoes"
+        [(ngModel)]="id_secao"
+        optionLabel="nome"
+        optionValue="id"
+        placeholder="Selecione a seção"
+        styleClass="w-full"
+        [appendTo]="'body'">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="cancelar()">
+    </button>
+    <button
+      pButton
+      label="Salvar"
+      icon="pi pi-check"
+      [loading]="salvando"
+      (click)="salvar()">
+    </button>
+  </ng-template>
+</p-dialog>

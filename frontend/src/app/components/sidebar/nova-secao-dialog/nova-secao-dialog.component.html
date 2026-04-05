@@ -1,0 +1,49 @@
+<p-dialog
+  header="Nova Seção"
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [style]="{width: '400px'}"
+  [closable]="true"
+  [draggable]="false">
+
+  <div class="modal-body">
+    <div class="modal-field">
+      <label><i class="pi pi-map-marker"></i> Nome <span class="required">*</span></label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="nome"
+        placeholder="Ex: São Paulo"
+        class="w-full" />
+    </div>
+
+    <div class="modal-field">
+      <label><i class="pi pi-tag"></i> Sigla</label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="sigla"
+        placeholder="Ex: SP"
+        class="w-full"
+        maxlength="10" />
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      label="Cancelar"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="cancelar()">
+    </button>
+    <button
+      pButton
+      label="Salvar"
+      icon="pi pi-check"
+      [loading]="salvando"
+      (click)="salvar()">
+    </button>
+  </ng-template>
+</p-dialog>

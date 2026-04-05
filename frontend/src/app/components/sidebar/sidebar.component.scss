@@ -1,6 +1,7 @@
 $header-height: 70px;
 $sidebar-expanded-width: 280px;
 $sidebar-collapsed-width: 72px;
+$img-height: 36px;
 
 aside {
   width: $sidebar-expanded-width;
@@ -15,64 +16,38 @@ aside {
   header {
     height: $header-height;
     background-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    a {
-      text-decoration: none;
+    img {
+      height: $img-height;
     }
   }
 }
 
-.area-filter-container {
-  padding: 0.75rem;
-  background-color: var(--surface-0);
-  border-bottom: 1px solid var(--surface-300);
-
-  .p-button-outlined {
-    border-color: var(--surface-300);
-    color: var(--surface-600);
-
-    &:hover {
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-      color: white;
-    }
-  }
-}
-
-.logo-text {
+.sidebar-body {
   display: flex;
   flex-direction: column;
-  align-items: center;
-
-  .logo-main {
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
-    letter-spacing: -1px;
-  }
-
-  .logo-sub {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: -2px;
-  }
-}
-
-.logo-text-small {
-  .logo-main {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-  }
+  height: 100vh;
+  width: 100%;
 }
 
 .footer {
+  flex-shrink: 0;
   background-color: var(--surface-100);
   display: flex;
-  height: 100%;
+
+  .nova-categoria-btn {
+    flex: 1;
+    border: 0;
+    border-radius: 0;
+    color: var(--surface-600);
+    justify-content: flex-start;
+    padding-left: 1rem;
+    font-size: 13px;
+
+    &:hover {
+      background-color: var(--surface-300);
+      color: var(--primary-color);
+    }
+  }
 
   button {
     background-color: var(--surface-100);
@@ -81,7 +56,6 @@ aside {
     border-radius: 0;
     outline: none;
     box-shadow: none;
-    width: 100%;
     cursor: pointer;
 
     &:hover {
@@ -96,22 +70,64 @@ aside {
   }
 }
 
+.area-filter {
+  flex-shrink: 0;
+  padding: 8px;
+  background-color: var(--surface-0);
+  border-bottom: 1px solid var(--surface-200);
+}
+
+:host ::ng-deep .area-filter {
+  .p-dropdown {
+    width: 100%;
+    border-color: var(--surface-300);
+
+    .p-dropdown-label {
+      font-size: 13px;
+    }
+  }
+}
+
 .content {
   background-color: var(--surface-0);
-  height: calc(100vh - 158px);
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
 
 /* menu expandido */
 :host ::ng-deep .p-panelmenu {
-  .p-panelmenu-header.separator > a {
-    padding: 0 !important;
-    position: relative;
-    height: 1px;
-    background-color: var(--surface-300);
+  /* remove toda margem entre painéis */
+  .p-panelmenu-panel {
+    margin: 0 !important;
+    border: 0 !important;
   }
 
-  .p-panelmenu-header > a {
+  /* painel do separator: espaço com linha visível */
+  .p-panelmenu-panel:has(.separator) {
+    height: 5px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .p-panelmenu-header.separator {
+    pointer-events: none;
+
+    .p-panelmenu-header-action {
+      padding: 0 !important;
+      height: 1px !important;
+      min-height: 0 !important;
+      max-height: 1px !important;
+      background-color: var(--surface-300) !important;
+      outline: none;
+      border: 0 !important;
+      box-shadow: none;
+      cursor: default !important;
+    }
+  }
+
+  .p-panelmenu-header > a,
+  .p-panelmenu-header .p-panelmenu-header-action {
     outline: none;
     border: 0;
     box-shadow: none;
@@ -123,12 +139,19 @@ aside {
     }
   }
 
-  .p-panelmenu-header.p-highlight > a {
+  .p-panelmenu-header.p-highlight > a,
+  .p-panelmenu-header.p-highlight .p-panelmenu-header-action {
     outline: none;
     border: 0;
     box-shadow: none;
     background-color: var(--surface-0);
     color: var(--surface-600);
+  }
+
+  .p-panelmenu-header.cat-selected .p-panelmenu-header-action {
+    background-color: var(--surface-300) !important;
+    color: var(--primary-color) !important;
+    border-radius: 6px;
   }
 
   .p-panelmenu-header .p-menuitem-link-active {
@@ -137,7 +160,8 @@ aside {
     border-radius: 6px;
   }
 
-  .p-panelmenu-header:not(.p-disabled) > a:hover {
+  .p-panelmenu-header:not(.p-disabled) > a:hover,
+  .p-panelmenu-header:not(.p-disabled) .p-panelmenu-header-action:hover {
     outline: none;
     border: 0;
     box-shadow: none;
@@ -221,6 +245,11 @@ aside {
     color: var(--primary-color);
   }
 
+  .p-menuitem .p-menuitem-link:not(.p-disabled):focus .p-menuitem-text {
+    background-color: var(--surface-0);
+    color: var(--primary-color);
+  }
+
   .p-menuitem .p-menuitem-link:focus {
     box-shadow: unset;
   }
@@ -236,32 +265,4 @@ aside {
   left: 100% !important;
   margin-left: 5px !important;
   margin-top: 0 !important;
-}
-
-/* modal nova categoria */
-:host ::ng-deep .modal-body {
-  padding: 8px 0 4px;
-}
-
-:host ::ng-deep .modal-field {
-  margin-bottom: 18px;
-
-  label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 7px;
-    color: var(--text-color);
-
-    i {
-      color: var(--primary-color);
-      font-size: 12px;
-    }
-  }
-
-  input, p-dropdown, p-multiSelect {
-    width: 100%;
-  }
 }

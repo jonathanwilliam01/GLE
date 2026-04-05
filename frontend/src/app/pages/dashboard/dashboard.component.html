@@ -5,32 +5,61 @@
       <h2>{{ categoriaSelecionada ? categoriaSelecionada.nome : 'Todos os Links' }}</h2>
     </div>
     <div class="header-right">
+      <div class="view-toggle">
+        <button
+          pButton
+          icon="pi pi-th-large"
+          class="p-button-sm"
+          [class.p-button-outlined]="viewMode !== 'cards'"
+          (click)="viewMode = 'cards'"
+          pTooltip="Visualização Cards"
+          tooltipPosition="top">
+        </button>
+        <button
+          pButton
+          icon="pi pi-list"
+          class="p-button-sm"
+          [class.p-button-outlined]="viewMode !== 'list'"
+          (click)="viewMode = 'list'"
+          pTooltip="Visualização Lista"
+          tooltipPosition="top">
+        </button>
+      </div>
+      <button
+        *ngIf="adminService.isAdmin"
+        pButton
+        icon="pi pi-plus"
+        label="Novo Link"
+        class="p-button-sm"
+        (click)="showNovoLink = true"
+        pTooltip="Adicionar novo link"
+        tooltipPosition="top">
+      </button>
       <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
         <input
           type="text"
           pInputText
           [(ngModel)]="pesquisa"
           placeholder="Buscar por link..."
-          (keyup.enter)="pesquisar()"
+          (ngModelChange)="pesquisar()"
         />
       </span>
     </div>
   </div>
 
-  <!-- Cards por seção -->
-  <div class="states-grid">
-    <div *ngIf="carregandoLinks" class="links-loading">
-      <i class="pi pi-spin pi-spinner"></i>
-      <span>Carregando links...</span>
-    </div>
+  <div *ngIf="carregandoLinks" class="links-loading">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Carregando links...</span>
+  </div>
+
+  <!-- ========== VISUALIZAÇÃO CARDS ========== -->
+  <div *ngIf="!carregandoLinks && viewMode === 'cards'" class="states-grid">
     <div
       *ngFor="let secao of secoesParaExibir"
       class="state-card"
       (mouseenter)="hoveredCard = secao"
       (mouseleave)="hoveredCard = null"
     >
-      <!-- Header do card -->
       <div class="state-card-header">
         <div class="state-card-title">
           <span class="state-flag">
@@ -41,11 +70,10 @@
         <span class="state-count">{{ getLinksFiltrados(secao).length }} itens</span>
       </div>
 
-      <!-- Lista de links -->
       <div class="state-card-body">
         <div class="city-list">
           <div class="city-row" *ngFor="let link of getLinksPaginados(secao)">
-            <a class="city-name" [href]="link.url" target="_blank" rel="noopener">{{ link.titulo }}</a>
+            <a class="city-name" [href]="link.url" target="_blank" rel="noopener">{{ getTituloLink(link, secao) }}</a>
             <div class="city-actions">
               <button
                 pButton
@@ -57,11 +85,6 @@
               ></button>
             </div>
           </div>
-
-          <div
-            class="city-row placeholder"
-            *ngFor="let i of [].constructor(ITEMS_PER_PAGE - getLinksPaginados(secao).length)"
-          ></div>
         </div>
 
         <div class="hover-hint" *ngIf="hoveredCard !== secao && getLinksFiltrados(secao).length === 0">
@@ -70,7 +93,6 @@
         </div>
       </div>
 
-      <!-- Paginação -->
       <div class="state-card-footer">
         <button
           pButton
@@ -92,4 +114,44 @@
       </div>
     </div>
   </div>
+
+  <!-- ========== VISUALIZAÇÃO LISTA (ACCORDION) ========== -->
+  <div *ngIf="!carregandoLinks && viewMode === 'list'" class="list-view">
+    <p-accordion [multiple]="true">
+      <p-accordionTab *ngFor="let secao of secoesParaExibir">
+        <ng-template pTemplate="header">
+          <div class="accordion-header">
+            <span class="accordion-flag"><i class="pi pi-map-marker"></i></span>
+            <span class="accordion-title">{{ secao }}</span>
+            <span class="accordion-count">{{ getLinksFiltrados(secao).length }}</span>
+          </div>
+        </ng-template>
+        <div class="accordion-links">
+          <div class="accordion-link-row" *ngFor="let link of getLinksFiltrados(secao)">
+            <a [href]="link.url" target="_blank" rel="noopener">
+              <i class="pi pi-external-link"></i>
+              {{ getTituloLink(link, secao) }}
+            </a>
+            <button
+              pButton
+              icon="pi pi-copy"
+              class="p-button-sm p-button-text"
+              pTooltip="Copiar Link"
+              tooltipPosition="top"
+              (click)="copiarLink(link)"
+            ></button>
+          </div>
+          <div *ngIf="getLinksFiltrados(secao).length === 0" class="accordion-empty">
+            <i class="pi pi-inbox"></i>
+            <span>Nenhum link encontrado</span>
+          </div>
+        </div>
+      </p-accordionTab>
+    </p-accordion>
+  </div>
 </div>
+
+<app-novo-link-dialog
+  [(visible)]="showNovoLink"
+  (linkSalvo)="onLinkSalvo()">
+</app-novo-link-dialog>

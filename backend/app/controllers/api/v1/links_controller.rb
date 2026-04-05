@@ -2,7 +2,7 @@ module Api
   module V1
     class LinksController < ApplicationController
       def index
-        scope = Link.ativos.includes(:secao).order(:id_secao, :titulo)
+        scope = Link.ativos.includes(:secao, :categoria).order(:id_secao, :titulo)
         scope = scope.where(id_categoria: params[:id_categoria]) if params[:id_categoria].present?
         scope = scope.where(id_secao: params[:id_secao]) if params[:id_secao].present?
         if params[:area_tecnica].present?

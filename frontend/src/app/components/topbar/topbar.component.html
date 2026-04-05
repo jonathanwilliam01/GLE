@@ -1,5 +1,31 @@
 <div class="flex align-items-center justify-content-between h-full mx-3">
   <div class="flex h-full gap-2 align-items-center">
-    <span class="font-bold text-color">GLE — Gestão de Link Embras</span>
+    <span class="font-bold text-color">GLE - Gestão de Link Embras</span>
+  </div>
+  <div class="flex gap-2 align-items-center">
+    <ng-container *ngIf="adminService.isAdmin; else loginBtn">
+      <span class="admin-badge"><i class="pi pi-shield"></i> Admin</span>
+      <button pButton icon="pi pi-sign-out" class="p-button-text p-button-sm p-button-secondary" pTooltip="Sair" (click)="adminService.logout()"></button>
+    </ng-container>
+    <ng-template #loginBtn>
+      <button pButton icon="pi pi-lock" label="Admin" class="p-button-text p-button-sm p-button-secondary" (click)="showLogin = true"></button>
+    </ng-template>
   </div>
 </div>
+
+<p-dialog header="Login Admin" [(visible)]="showLogin" [modal]="true" [style]="{width: '340px'}" [closable]="true" [draggable]="false">
+  <div class="flex flex-column gap-3 mt-2">
+    <span class="p-float-label">
+      <input id="adminUser" pInputText [(ngModel)]="user" class="w-full" />
+      <label for="adminUser">Usuário</label>
+    </span>
+    <span class="p-float-label">
+      <input id="adminSenha" type="password" pInputText [(ngModel)]="senha" class="w-full" (keyup.enter)="doLogin()" />
+      <label for="adminSenha">Senha</label>
+    </span>
+    <small *ngIf="loginError" class="p-error">Credenciais inválidas.</small>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Entrar" icon="pi pi-sign-in" [loading]="logging" (click)="doLogin()"></button>
+  </ng-template>
+</p-dialog>

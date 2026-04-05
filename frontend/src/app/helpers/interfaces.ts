@@ -22,6 +22,7 @@ export interface LinkItem {
   id_secao: number;
   secao: string;
   id_categoria: number;
+  categoria_nome?: string;
   area_tecnica?: string;
 }
 

@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { CategoriaService } from '@services/categoria.service';
 import { LinkService } from '@services/link.service';
+import { AdminService } from '@services/admin.service';
 import { Categoria, LinkItem, AreaTecnica } from '@helpers/interfaces';
 import { SidebarMenu } from '@app/components/sidebar/sidebar.menu';
 
@@ -17,8 +18,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private messageService: MessageService = inject(MessageService);
   private linkService: LinkService = inject(LinkService);
   private sidebarMenu: SidebarMenu = inject(SidebarMenu);
+  public adminService: AdminService = inject(AdminService);
 
-  readonly ITEMS_PER_PAGE = 5;
+  readonly ITEMS_PER_PAGE = 8;
+  readonly SECOES_COM_CATEGORIA = ['São Paulo', 'Rio de Janeiro', 'Minas Gerais'];
+
+  showNovoLink = false;
+
+  getTituloLink(link: LinkItem, secao: string): string {
+    if (!this.categoriaSelecionada && this.SECOES_COM_CATEGORIA.includes(secao) && link.categoria_nome) {
+      return `${link.categoria_nome} - ${link.titulo}`;
+    }
+    return link.titulo;
+  }
 
   categoriaSelecionada: Categoria | null = null;
   private sub!: Subscription;
@@ -30,14 +42,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   carregandoLinks = false;
   links: LinkItem[] = [];
 
+  viewMode: 'cards' | 'list' = 'cards';
+
   ngOnInit(): void {
     this.sub = this.sidebarMenu.categoriaSelecionada.subscribe((cat) => {
       this.categoriaSelecionada = cat;
       this.paginas = {};
       this.carregarLinks();
     });
-
-    this.carregarLinks();
   }
 
   ngOnDestroy(): void {
@@ -63,22 +75,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  get linksUnicos(): LinkItem[] {
+    const seen = new Set<string>();
+    return this.links.filter((l) => {
+      const key = `${l.url}__${l.id_secao}__${l.id_categoria}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
   get secoesParaExibir(): string[] {
     const seen = new Map<number, string>();
-    this.links.forEach((l) => {
+    this.linksUnicos.forEach((l) => {
       if (l.secao && !seen.has(l.id_secao)) seen.set(l.id_secao, l.secao);
     });
-    return Array.from(seen.entries())
+    const todas = Array.from(seen.entries())
       .sort(([a], [b]) => a - b)
       .map(([, name]) => name);
+    if (!this.pesquisa.trim()) return todas;
+    return todas.filter((secao) => this.getLinksFiltrados(secao).length > 0);
   }
 
   getLinksFiltrados(secao: string): LinkItem[] {
-    let filtered = this.links.filter((l) => l.secao === secao);
+    let filtered = this.linksUnicos.filter((l) => l.secao === secao);
     if (this.pesquisa.trim()) {
       const q = this.pesquisa.toLowerCase();
       filtered = filtered.filter(
-        (l) => l.titulo.toLowerCase().includes(q) || l.url.toLowerCase().includes(q)
+        (l) =>
+          l.titulo.toLowerCase().includes(q) ||
+          (l.categoria_nome ?? '').toLowerCase().includes(q)
       );
     }
     return filtered;
@@ -95,11 +121,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   paginaAnterior(secao: string): void {
-    if (this.paginas[secao] > 0) this.paginas[secao]--;
+    const pg = this.paginas[secao] ?? 0;
+    if (pg > 0) this.paginas[secao] = pg - 1;
   }
 
   proximaPagina(secao: string): void {
-    if (this.paginas[secao] < this.getTotalPaginas(secao) - 1) this.paginas[secao]++;
+    const pg = this.paginas[secao] ?? 0;
+    if (pg < this.getTotalPaginas(secao) - 1) this.paginas[secao] = pg + 1;
   }
 
   pesquisar(): void {
@@ -114,5 +142,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       detail: `Link de ${link.titulo} copiado!`,
       life: 2000,
     });
+  }
+
+  onLinkSalvo(): void {
+    this.carregarLinks();
   }
 }
