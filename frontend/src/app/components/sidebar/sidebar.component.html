@@ -22,7 +22,11 @@
     </div>
 
     <div #panelMenuContainer class="content">
+      <div *ngIf="sidebarMenu.carregandoCategorias && !collapsed" class="sidebar-loading">
+        <div class="sidebar-skeleton" *ngFor="let i of [1,2,3,4,5]"></div>
+      </div>
       <p-panelMenu
+        *ngIf="!sidebarMenu.carregandoCategorias"
         #panelMenu
         [model]="sidebarMenu.menus"
         [multiple]="false"

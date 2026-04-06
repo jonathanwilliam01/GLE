@@ -21,6 +21,7 @@ export class SidebarMenu implements OnDestroy {
   public menus: MenuItem[] = [];
   public categorias: Categoria[] = [];
   public areaFiltro: string | null = null;
+  public carregandoCategorias = true;
 
   public areasTecnicas: AreaTecnica[] = [];
   public areaOpcoesFiltro: { label: string; value: string | null }[] = [
@@ -48,9 +49,8 @@ export class SidebarMenu implements OnDestroy {
   public async carregarAreas() {
     try {
       const areas = await this.areaTecnicaService.listar();
-      // Popula areasTecnicas (usado no dialog de nova categoria)
+      // Popula areasTecnicas (usado no dialog de nova categoria) — inclui 'Todas'
       this.areasTecnicas = areas
-        .filter((a) => a.nome !== 'Todas')
         .map((a) => ({ label: a.nome, value: a.nome }));
       // Popula o filtro do dropdown (exclui 'Todas' pois já temos 'Todas as áreas')
       this.areaOpcoesFiltro = [
@@ -65,12 +65,15 @@ export class SidebarMenu implements OnDestroy {
   }
 
   public async carregarCategorias() {
+    this.carregandoCategorias = true;
     try {
       this.categorias = await this.categoriaService.listar();
       this.buildMenus();
     } catch {
       this.categorias = [];
       this.buildMenus();
+    } finally {
+      this.carregandoCategorias = false;
     }
   }
 

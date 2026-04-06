@@ -23,6 +23,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuModule } from 'primeng/menu';
 import { AccordionModule } from 'primeng/accordion';
+import { SkeletonModule } from 'primeng/skeleton';
 
 // Serviços PrimeNG
 import { MessageService } from 'primeng/api';
@@ -32,19 +33,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // Components
-
-import { MainComponent } from './components/main/main.component';
 import { LayoutComponent } from './components/layout/layout.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TopbarComponent } from './components/topbar/topbar.component';
 import { FooterbarComponent } from './components/footerbar/footerbar.component';
-import { BackgroundComponent } from './components/background/background.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { NovaCategoriaDialogComponent } from './components/sidebar/nova-categoria-dialog/nova-categoria-dialog.component';
 import { NovaSecaoDialogComponent } from './components/sidebar/nova-secao-dialog/nova-secao-dialog.component';
 import { NovoLinkDialogComponent } from './pages/dashboard/novo-link-dialog.component';
 import { CadastrosComponent } from './pages/cadastros/cadastros.component';
+import { GeosiapLoaderComponent } from './components/geosiap-loader/geosiap-loader.component';
+import { TableSkeletonComponent } from './components/table-skeleton/table-skeleton.component';
 
 // Services
 import { SidebarMenu } from './components/sidebar/sidebar.menu';
@@ -52,18 +52,18 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent,
     LayoutComponent,
     SidebarComponent,
     TopbarComponent,
     FooterbarComponent,
-    BackgroundComponent,
     BreadcrumbsComponent,
     DashboardComponent,
     NovaCategoriaDialogComponent,
     NovaSecaoDialogComponent,
     NovoLinkDialogComponent,
     CadastrosComponent,
+    GeosiapLoaderComponent,
+    TableSkeletonComponent,
   ],
   imports: [
     BrowserModule,
@@ -91,6 +91,7 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
     BreadcrumbModule,
     MenuModule,
     AccordionModule,
+    SkeletonModule,
   ],
   providers: [
     MessageService,

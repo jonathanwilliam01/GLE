@@ -33,6 +33,14 @@ export class ApiService {
       .catch((response: any) => this.errorResponse(response));
   }
 
+  patch(path: string, body: any = {}): Promise<any> {
+    return firstValueFrom(
+      this.httpClient.patch(this.apiUrl(path), body, this.getOptions())
+    )
+      .then((response: any) => response)
+      .catch((response: any) => this.errorResponse(response));
+  }
+
   delete(path: string): Promise<any> {
     return firstValueFrom(
       this.httpClient.delete(this.apiUrl(path), this.getOptions())

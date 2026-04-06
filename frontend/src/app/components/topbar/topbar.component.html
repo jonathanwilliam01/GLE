@@ -3,6 +3,14 @@
     <span class="font-bold text-color">GLE - Gestão de Link Embras</span>
   </div>
   <div class="flex gap-2 align-items-center">
+    <button
+      pButton
+      [icon]="themeService.isDark ? 'pi pi-sun' : 'pi pi-moon'"
+      class="p-button-text p-button-sm p-button-secondary"
+      [pTooltip]="themeService.isDark ? 'Tema claro' : 'Tema escuro'"
+      tooltipPosition="bottom"
+      (click)="themeService.toggle()">
+    </button>
     <ng-container *ngIf="adminService.isAdmin; else loginBtn">
       <span class="admin-badge"><i class="pi pi-shield"></i> Admin</span>
       <button pButton icon="pi pi-sign-out" class="p-button-text p-button-sm p-button-secondary" pTooltip="Sair" (click)="adminService.logout()"></button>

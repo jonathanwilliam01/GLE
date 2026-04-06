@@ -1,3 +1,126 @@
+/* ========== TOP 5 MAIS ACESSADOS ========== */
+.top5-section {
+  margin-bottom: 1.25rem;
+
+  .top5-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0.6rem;
+
+    i {
+      color: #f97316;
+      font-size: 15px;
+    }
+
+    span {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-color-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+  }
+
+  .top5-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .top5-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface-0);
+    border: 1px solid var(--surface-200);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    overflow: hidden;
+
+    &:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15);
+      background: var(--surface-50);
+    }
+  }
+
+  .top5-rank {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--surface-200);
+    color: var(--text-color-secondary);
+
+    &[data-rank="1"] { background: #fef9c3; color: #b45309; }
+    &[data-rank="2"] { background: #f1f5f9; color: #475569; }
+    &[data-rank="3"] { background: #fff7ed; color: #c2410c; }
+  }
+
+  .top5-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .top5-titulo {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .top5-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .top5-categoria,
+  .top5-secao {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    color: var(--text-color-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    i {
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+  }
+
+  .top5-cliques {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+
+    i {
+      font-size: 11px;
+    }
+  }
+}
+
 /* ========== DASHBOARD HEADER ========== */
 .dashboard-header {
   display: flex;
@@ -7,11 +130,19 @@
   gap: 1rem;
 
   h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
+    margin: 0 0 2px;
+    font-size: 24px;
+    font-weight: 700;
     color: var(--text-color);
     white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .page-subtitle {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    font-weight: 400;
   }
 
   .header-right {
@@ -40,14 +171,50 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 40px;
-  color: var(--surface-400);
-  font-size: 14px;
+  padding: 60px 40px;
   width: 100%;
+}
 
-  i {
-    font-size: 18px;
+/* Host: quando categoria selecionada, preenche o espaço via flex sem gerar scroll */
+:host.host-has-category {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .dashboard {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-header {
+    flex-shrink: 0;
+  }
+
+  .states-grid.has-category {
+    flex: 1;
+    min-height: 0;
+
+    .state-card {
+      height: 100%;
+    }
+  }
+}
+
+/* Somente na visão de cards: impede scroll no .dashboard para que o flex-fill funcione */
+:host.host-has-category.host-view-cards {
+  .dashboard {
+    overflow: hidden;
+  }
+}
+
+/* Na visão de lista com categoria: permite scroll no .dashboard */
+:host.host-has-category:not(.host-view-cards) {
+  .dashboard {
+    overflow-y: auto;
   }
 }
 
@@ -66,7 +233,8 @@
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.25s, border-color 0.25s;
-  height: 520px;
+  // Visão geral: altura fixa (pode ter scroll)
+  height: 490px;
   display: flex;
   flex-direction: column;
 
@@ -74,6 +242,11 @@
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.12);
     border-color: var(--primary-color);
   }
+}
+
+// Categoria selecionada: card usa height: 100% via flex (definido no bloco :host acima)
+.states-grid.has-category .state-card {
+  height: 100%;
 }
 
 .state-card-header {
@@ -121,9 +294,15 @@
   }
 }
 
+.state-card-counts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .state-card-body {
   flex: 1;
-  padding: 8px 12px 4px;
+  padding: 8px 12px;
   overflow: hidden;
   position: relative;
 }
@@ -136,10 +315,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-radius: 7px;
   transition: background 0.15s;
-  min-height: 44px;
+  min-height: 40px;
 
   &:hover {
     background: var(--surface-50);
@@ -152,6 +331,7 @@
 
 .city-name {
   flex: 1;
+  min-width: 0;
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -160,6 +340,9 @@
   font-weight: 500;
   text-decoration: none;
   transition: color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     color: var(--primary-color);
@@ -178,6 +361,10 @@
 
     &:hover {
       color: var(--primary-color) !important;
+    }
+
+    &.btn-delete {
+      color: #ef4444 !important;
     }
   }
 }
@@ -360,6 +547,75 @@
   }
 }
 
+/* ========== LINKS EXCLUÍDOS (admin) ========== */
+.city-row.link-excluido {
+  opacity: 0.65;
+
+  .city-name {
+    text-decoration: line-through;
+    color: var(--surface-400);
+
+    &:hover {
+      color: var(--surface-400);
+      text-decoration: line-through;
+    }
+  }
+
+  .city-actions button {
+    // mantém o comportamento opacity-0 normal
+  }
+}
+
+.accordion-link-row.link-excluido {
+  opacity: 0.65;
+
+  a {
+    text-decoration: line-through;
+    color: var(--surface-400) !important;
+
+    &:hover {
+      color: var(--surface-400) !important;
+      text-decoration: line-through !important;
+    }
+  }
+}
+
+.badge-excluido {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 6px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  i {
+    font-size: 9px;
+  }
+}
+
+.deleted-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  padding: 2px 8px;
+
+  i {
+    font-size: 9px;
+  }
+}
+
 /* ========== MODALS ========== */
 .modal-body {
   padding: 8px 0 4px;
@@ -462,7 +718,7 @@
     flex-wrap: wrap;
 
     h2 {
-      font-size: 17px;
+      font-size: 18px;
     }
 
     .header-right {

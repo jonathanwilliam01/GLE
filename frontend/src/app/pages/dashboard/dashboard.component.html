@@ -3,6 +3,8 @@
   <div class="dashboard-header">
     <div class="header-left">
       <h2>{{ categoriaSelecionada ? categoriaSelecionada.nome : 'Todos os Links' }}</h2>
+      <p class="page-subtitle" *ngIf="!categoriaSelecionada">Selecione uma categoria para filtrar ou navegue por todos os links</p>
+      <p class="page-subtitle" *ngIf="categoriaSelecionada">{{ links.length }} link{{ links.length !== 1 ? 's' : '' }} nesta categoria</p>
     </div>
     <div class="header-right">
       <div class="view-toggle">
@@ -48,12 +50,45 @@
   </div>
 
   <div *ngIf="carregandoLinks" class="links-loading">
-    <i class="pi pi-spin pi-spinner"></i>
-    <span>Carregando links...</span>
+    <app-geosiap-loader></app-geosiap-loader>
+  </div>
+
+  <!-- ========== TOP 5 LINKS MAIS CLICADOS ========== -->
+  <div *ngIf="!categoriaSelecionada && !carregandoLinks && top5Links.length > 0" class="top5-section">
+    <div class="top5-header">
+      <i class="pi pi-fire"></i>
+      <span>Mais Acessados</span>
+    </div>
+    <div class="top5-list">
+      <a
+        *ngFor="let link of top5Links; let i = index"
+        class="top5-card"
+        [href]="link.url"
+        target="_blank"
+        rel="noopener"
+        (click)="registrarClique(link)">
+        <span class="top5-rank" [attr.data-rank]="i + 1">{{ i + 1 }}</span>
+        <div class="top5-info">
+          <span class="top5-titulo">{{ link.titulo }}</span>
+          <span class="top5-meta">
+            <span *ngIf="link.categoria_nome" class="top5-categoria">
+              <i class="pi pi-tag"></i>{{ link.categoria_nome }}
+            </span>
+            <span class="top5-secao">
+              <i class="pi pi-map-marker"></i>{{ link.secao }}
+            </span>
+          </span>
+        </div>
+        <span class="top5-cliques">
+          <i class="pi pi-eye"></i>
+          {{ link.qtd_cliques }}
+        </span>
+      </a>
+    </div>
   </div>
 
   <!-- ========== VISUALIZAÇÃO CARDS ========== -->
-  <div *ngIf="!carregandoLinks && viewMode === 'cards'" class="states-grid">
+  <div *ngIf="!carregandoLinks && viewMode === 'cards'" class="states-grid" [class.has-category]="categoriaSelecionada">
     <div
       *ngFor="let secao of secoesParaExibir"
       class="state-card"
@@ -67,22 +102,48 @@
           </span>
           <h3>{{ secao }}</h3>
         </div>
-        <span class="state-count">{{ getLinksFiltrados(secao).length }} itens</span>
+        <div class="state-card-counts">
+          <span class="state-count">{{ getLinksAtivosNaSecao(secao) }} itens</span>
+          <span *ngIf="adminService.isAdmin && getLinksExcluidosNaSecao(secao) > 0" class="deleted-count-badge">
+            <i class="pi pi-trash"></i>{{ getLinksExcluidosNaSecao(secao) }}
+          </span>
+        </div>
       </div>
 
       <div class="state-card-body">
         <div class="city-list">
-          <div class="city-row" *ngFor="let link of getLinksPaginados(secao)">
-            <a class="city-name" [href]="link.url" target="_blank" rel="noopener">{{ getTituloLink(link, secao) }}</a>
-            <div class="city-actions">
-              <button
-                pButton
-                icon="pi pi-copy"
-                class="p-button-sm p-button-text"
-                pTooltip="Copiar Link"
-                tooltipPosition="top"
-                (click)="copiarLink(link)"
-              ></button>
+            <div class="city-row" [class.link-excluido]="!!link.dt_exclusao" *ngFor="let link of getLinksPaginados(secao)">
+              <a class="city-name" [href]="link.url" target="_blank" rel="noopener" (click)="registrarClique(link)">{{ getTituloLink(link, secao) }}</a>
+              <div class="city-actions">
+                <span *ngIf="adminService.isAdmin && link.dt_exclusao" class="badge-excluido">
+                  <i class="pi pi-trash"></i> Excluído
+                </span>
+                <button
+                  pButton
+                  icon="pi pi-copy"
+                  class="p-button-sm p-button-text"
+                  pTooltip="Copiar Link"
+                  tooltipPosition="top"
+                  (click)="copiarLink(link)"
+                ></button>
+                <button
+                  *ngIf="adminService.isAdmin && link.dt_exclusao"
+                  pButton
+                  icon="pi pi-replay"
+                  class="p-button-sm p-button-text p-button-success"
+                  pTooltip="Reativar Link"
+                  tooltipPosition="top"
+                  (click)="$event.stopPropagation(); reativarLink(link)"
+                ></button>
+                <button
+                  *ngIf="adminService.isAdmin && !link.dt_exclusao"
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-sm p-button-text p-button-danger btn-delete"
+                  pTooltip="Excluir Link"
+                  tooltipPosition="top"
+                  (click)="$event.stopPropagation(); excluirLink(link)"
+                ></button>
             </div>
           </div>
         </div>
@@ -123,15 +184,21 @@
           <div class="accordion-header">
             <span class="accordion-flag"><i class="pi pi-map-marker"></i></span>
             <span class="accordion-title">{{ secao }}</span>
-            <span class="accordion-count">{{ getLinksFiltrados(secao).length }}</span>
+            <span class="accordion-count">{{ getLinksAtivosNaSecao(secao) }}</span>
+            <span *ngIf="adminService.isAdmin && getLinksExcluidosNaSecao(secao) > 0" class="deleted-count-badge">
+              <i class="pi pi-trash"></i>{{ getLinksExcluidosNaSecao(secao) }}
+            </span>
           </div>
         </ng-template>
         <div class="accordion-links">
-          <div class="accordion-link-row" *ngFor="let link of getLinksFiltrados(secao)">
-            <a [href]="link.url" target="_blank" rel="noopener">
+          <div class="accordion-link-row" [class.link-excluido]="!!link.dt_exclusao" *ngFor="let link of getLinksFiltrados(secao)">
+            <a [href]="link.url" target="_blank" rel="noopener" (click)="registrarClique(link)">
               <i class="pi pi-external-link"></i>
               {{ getTituloLink(link, secao) }}
             </a>
+            <span *ngIf="adminService.isAdmin && link.dt_exclusao" class="badge-excluido">
+              <i class="pi pi-trash"></i> Excluído
+            </span>
             <button
               pButton
               icon="pi pi-copy"
@@ -139,6 +206,24 @@
               pTooltip="Copiar Link"
               tooltipPosition="top"
               (click)="copiarLink(link)"
+            ></button>
+            <button
+              *ngIf="adminService.isAdmin && link.dt_exclusao"
+              pButton
+              icon="pi pi-replay"
+              class="p-button-sm p-button-text p-button-success"
+              pTooltip="Reativar Link"
+              tooltipPosition="top"
+              (click)="$event.stopPropagation(); reativarLink(link)"
+            ></button>
+            <button
+              *ngIf="adminService.isAdmin && !link.dt_exclusao"
+              pButton
+              icon="pi pi-trash"
+              class="p-button-sm p-button-text p-button-danger btn-delete"
+              pTooltip="Excluir Link"
+              tooltipPosition="top"
+              (click)="$event.stopPropagation(); excluirLink(link)"
             ></button>
           </div>
           <div *ngIf="getLinksFiltrados(secao).length === 0" class="accordion-empty">
@@ -155,3 +240,5 @@
   [(visible)]="showNovoLink"
   (linkSalvo)="onLinkSalvo()">
 </app-novo-link-dialog>
+
+<p-confirmDialog></p-confirmDialog>

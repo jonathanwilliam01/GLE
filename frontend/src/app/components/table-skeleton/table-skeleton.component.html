@@ -1,0 +1,9 @@
+@for (row of dummyRows; track row) {
+  <tr>
+    @for (col of dummyCols; track col) {
+      <td class="p-3">
+        <p-skeleton height="1rem" width="100%"></p-skeleton>
+      </td>
+    }
+  </tr>
+}

@@ -25,4 +25,16 @@ export class LinkService {
   excluir(id: number): Promise<any> {
     return this.apiService.delete(`links/${id}`);
   }
+
+  reativar(id: number): Promise<any> {
+    return this.apiService.patch(`links/${id}/reativar`, {});
+  }
+
+  registrarClique(id: number): Promise<any> {
+    return this.apiService.patch(`links/${id}/clique`, {});
+  }
+
+  top5(): Promise<LinkItem[]> {
+    return this.apiService.get('links/top5');
+  }
 }

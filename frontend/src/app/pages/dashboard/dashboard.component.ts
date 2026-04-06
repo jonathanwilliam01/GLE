@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, HostBinding, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { CategoriaService } from '@services/categoria.service';
 import { LinkService } from '@services/link.service';
@@ -16,12 +16,33 @@ import { SidebarMenu } from '@app/components/sidebar/sidebar.menu';
 export class DashboardComponent implements OnInit, OnDestroy {
   private router: Router = inject(Router);
   private messageService: MessageService = inject(MessageService);
+  private confirmationService: ConfirmationService = inject(ConfirmationService);
   private linkService: LinkService = inject(LinkService);
   private sidebarMenu: SidebarMenu = inject(SidebarMenu);
   public adminService: AdminService = inject(AdminService);
 
-  readonly ITEMS_PER_PAGE = 8;
   readonly SECOES_COM_CATEGORIA = ['São Paulo', 'Rio de Janeiro', 'Minas Gerais'];
+
+  @HostBinding('class.host-has-category')
+  get hostHasCategory(): boolean { return !!this.categoriaSelecionada; }
+
+  @HostBinding('class.host-view-cards')
+  get hostViewCards(): boolean { return this.viewMode === 'cards'; }
+
+  get itemsPerPage(): number {
+    if (!this.categoriaSelecionada) {
+      // 7 itens × 40px = 280px + folga suficiente no card fixo de 490px
+      return 7;
+    }
+    const h = window.innerHeight;
+    // card body = vh - topbar(72) - footer(36) - main-padding(30) - breadcrumbs-margin(15)
+    // - dashboard-header(53) - card-header(66) - card-footer(54) - body-padding(16)
+    const rows = Math.floor((h - 342) / 40);
+    return Math.max(6, Math.min(rows, 20));
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {}
 
   showNovoLink = false;
 
@@ -41,6 +62,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   hoveredCard: string | null = null;
   carregandoLinks = false;
   links: LinkItem[] = [];
+  top5Links: LinkItem[] = [];
 
   viewMode: 'cards' | 'list' = 'cards';
 
@@ -62,6 +84,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       const params: any = {};
       if (this.categoriaSelecionada) {
         params.id_categoria = this.categoriaSelecionada.id;
+      } else {
+        this.carregarTop5();
+      }
+      if (this.adminService.isAdmin) {
+        params.incluir_excluidos = true;
       }
       this.links = await this.linkService.listar(params);
     } catch {
@@ -75,6 +102,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  private async carregarTop5(): Promise<void> {
+    try {
+      this.top5Links = await this.linkService.top5();
+    } catch {
+      this.top5Links = [];
+    }
+  }
+
   get linksUnicos(): LinkItem[] {
     const seen = new Set<string>();
     return this.links.filter((l) => {
@@ -83,6 +118,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       seen.add(key);
       return true;
     });
+  }
+
+  private normalizar(texto: string): string {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
 
   get secoesParaExibir(): string[] {
@@ -94,30 +136,55 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .sort(([a], [b]) => a - b)
       .map(([, name]) => name);
     if (!this.pesquisa.trim()) return todas;
-    return todas.filter((secao) => this.getLinksFiltrados(secao).length > 0);
+    const q = this.normalizar(this.pesquisa);
+    // Mostra seção se o nome da seção bate OU se tem links filtrados
+    return todas.filter(
+      (secao) =>
+        this.normalizar(secao).includes(q) ||
+        this.getLinksFiltrados(secao).length > 0
+    );
   }
 
   getLinksFiltrados(secao: string): LinkItem[] {
     let filtered = this.linksUnicos.filter((l) => l.secao === secao);
     if (this.pesquisa.trim()) {
-      const q = this.pesquisa.toLowerCase();
+      const q = this.normalizar(this.pesquisa);
+      // Se a pesquisa bate com o nome da seção, retorna todos os links dela
+      if (this.normalizar(secao).includes(q)) return this.sortComExcluidos(filtered);
       filtered = filtered.filter(
         (l) =>
-          l.titulo.toLowerCase().includes(q) ||
-          (l.categoria_nome ?? '').toLowerCase().includes(q)
+          this.normalizar(l.titulo).includes(q) ||
+          this.normalizar(l.categoria_nome ?? '').includes(q)
       );
     }
-    return filtered;
+    return this.sortComExcluidos(filtered);
+  }
+
+  private sortComExcluidos(links: LinkItem[]): LinkItem[] {
+    return [...links].sort((a, b) => {
+      const aEx = !!a.dt_exclusao;
+      const bEx = !!b.dt_exclusao;
+      if (aEx === bEx) return 0;
+      return aEx ? 1 : -1;
+    });
+  }
+
+  getLinksAtivosNaSecao(secao: string): number {
+    return this.getLinksFiltrados(secao).filter((l) => !l.dt_exclusao).length;
+  }
+
+  getLinksExcluidosNaSecao(secao: string): number {
+    return this.getLinksFiltrados(secao).filter((l) => !!l.dt_exclusao).length;
   }
 
   getLinksPaginados(secao: string): LinkItem[] {
     const todos = this.getLinksFiltrados(secao);
     const pg = this.paginas[secao] ?? 0;
-    return todos.slice(pg * this.ITEMS_PER_PAGE, (pg + 1) * this.ITEMS_PER_PAGE);
+    return todos.slice(pg * this.itemsPerPage, (pg + 1) * this.itemsPerPage);
   }
 
   getTotalPaginas(secao: string): number {
-    return Math.ceil(this.getLinksFiltrados(secao).length / this.ITEMS_PER_PAGE);
+    return Math.ceil(this.getLinksFiltrados(secao).length / this.itemsPerPage);
   }
 
   paginaAnterior(secao: string): void {
@@ -139,8 +206,54 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.messageService.add({
       severity: 'info',
       summary: 'Copiado',
-      detail: `Link de ${link.titulo} copiado!`,
+      detail: `Link ${link.categoria_nome ?? ''} de ${link.titulo} copiado!`,
       life: 2000,
+    });
+  }
+
+  registrarClique(link: LinkItem): void {
+    this.linkService.registrarClique(link.id).catch(() => {});
+  }
+
+  excluirLink(link: LinkItem): void {
+    this.confirmationService.confirm({
+      message: `Deseja excluir o link "${link.titulo}"?`,
+      header: 'Confirmar Exclusão',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+      rejectButtonStyleClass: 'p-button-text',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: async () => {
+        try {
+          await this.linkService.excluir(link.id);
+          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link excluído.' });
+          this.carregarLinks();
+        } catch {
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao excluir o link.' });
+        }
+      },
+    });
+  }
+
+  reativarLink(link: LinkItem): void {
+    this.confirmationService.confirm({
+      message: `Deseja reativar o link "${link.titulo}"?`,
+      header: 'Confirmar Reativação',
+      icon: 'pi pi-refresh',
+      acceptLabel: 'Reativar',
+      rejectLabel: 'Cancelar',
+      rejectButtonStyleClass: 'p-button-text',
+      acceptButtonStyleClass: 'p-button-success',
+      accept: async () => {
+        try {
+          await this.linkService.reativar(link.id);
+          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link reativado.' });
+          this.carregarLinks();
+        } catch {
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Erro ao reativar o link.' });
+        }
+      },
     });
   }
 

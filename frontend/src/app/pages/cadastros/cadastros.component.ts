@@ -74,56 +74,60 @@ export class CadastrosComponent implements OnInit {
   ];
 
   iconesDisponiveis = [
-    { label: 'Pasta', value: 'pi pi-folder' },
-    { label: 'Globo', value: 'pi pi-globe' },
-    { label: 'Estrela', value: 'pi pi-star' },
-    { label: 'Coração', value: 'pi pi-heart' },
-    { label: 'Casa', value: 'pi pi-home' },
-    { label: 'Usuários', value: 'pi pi-users' },
-    { label: 'Configuração', value: 'pi pi-cog' },
-    { label: 'Gráfico', value: 'pi pi-chart-bar' },
-    { label: 'Mapa', value: 'pi pi-map-marker' },
-    { label: 'Livro', value: 'pi pi-book' },
-    { label: 'Calendário', value: 'pi pi-calendar' },
-    { label: 'Sino', value: 'pi pi-bell' },
-    { label: 'Tag', value: 'pi pi-tag' },
-    { label: 'Carteira', value: 'pi pi-wallet' },
-    { label: 'Carrinho', value: 'pi pi-shopping-cart' },
-    { label: 'Telefone', value: 'pi pi-phone' },
-    { label: 'Envelope', value: 'pi pi-envelope' },
-    { label: 'Câmera', value: 'pi pi-camera' },
-    { label: 'Imagem', value: 'pi pi-image' },
-    { label: 'Vídeo', value: 'pi pi-video' },
-    { label: 'Cadeado', value: 'pi pi-lock' },
-    { label: 'Escudo', value: 'pi pi-shield' },
-    { label: 'Raio', value: 'pi pi-bolt' },
-    { label: 'Nuvem', value: 'pi pi-cloud' },
-    { label: 'Banco de dados', value: 'pi pi-database' },
-    { label: 'Servidor', value: 'pi pi-server' },
-    { label: 'Código', value: 'pi pi-code' },
-    { label: 'Prédio', value: 'pi pi-building' },
-    { label: 'Carro', value: 'pi pi-car' },
-    { label: 'Avião', value: 'pi pi-send' },
-    { label: 'Dinheiro', value: 'pi pi-money-bill' },
-    { label: 'Lápis', value: 'pi pi-pencil' },
-    { label: 'Bandeira', value: 'pi pi-flag' },
-    { label: 'Lâmpada', value: 'pi pi-sun' },
-    { label: 'Relógio', value: 'pi pi-clock' },
-    { label: 'Download', value: 'pi pi-download' },
-    { label: 'Upload', value: 'pi pi-upload' },
-    { label: 'Link', value: 'pi pi-link' },
-    { label: 'Arquivo', value: 'pi pi-file' },
-    { label: 'Check', value: 'pi pi-check-circle' },
-    { label: 'Alerta', value: 'pi pi-exclamation-triangle' },
-    { label: 'Info', value: 'pi pi-info-circle' },
-    { label: 'Documento', value: 'pi pi-file-edit' },
-    { label: 'Comentário', value: 'pi pi-comment' },
-    { label: 'Favorito', value: 'pi pi-bookmark' },
-    { label: 'Impressora', value: 'pi pi-print' },
-    { label: 'Filtro', value: 'pi pi-filter' },
-    { label: 'Lista', value: 'pi pi-list' },
-    { label: 'Paleta', value: 'pi pi-palette' },
-    { label: 'ID', value: 'pi pi-id-card' },
+        { label: 'Pasta',          value: 'pi pi-folder' },
+    { label: 'Monitor',        value: 'pi pi-desktop' },
+    { label: 'Prédio',         value: 'pi pi-building' },
+    { label: 'Usuário',        value: 'pi pi-user' },
+    { label: 'Engrenagem',     value: 'pi pi-cog' },
+    { label: 'Link',           value: 'pi pi-link' },
+    { label: 'Arquivo',        value: 'pi pi-file' },
+    { label: 'Globo',          value: 'pi pi-globe' },
+    { label: 'Servidor',       value: 'pi pi-server' },
+    { label: 'Banco de Dados', value: 'pi pi-database' },
+    { label: 'Gráfico Barra',  value: 'pi pi-chart-bar' },
+    { label: 'Gráfico Pizza',  value: 'pi pi-chart-pie' },
+    { label: 'Mapa',           value: 'pi pi-sitemap' },
+    { label: 'Etiqueta',       value: 'pi pi-tag' },
+    { label: 'Escudo',         value: 'pi pi-shield' },
+    { label: 'Código',         value: 'pi pi-code' },
+    { label: 'Nuvem',          value: 'pi pi-cloud' },
+    { label: 'Estrela',        value: 'pi pi-star' },
+    { label: 'Favorito',       value: 'pi pi-bookmark' },
+    { label: 'Casa',           value: 'pi pi-home' },
+    { label: 'Cadeado',        value: 'pi pi-lock' },
+    { label: 'Chave',          value: 'pi pi-key' },
+    { label: 'Envelope',       value: 'pi pi-envelope' },
+    { label: 'Calendário',     value: 'pi pi-calendar' },
+    { label: 'Relógio',        value: 'pi pi-clock' },
+    { label: 'Download',       value: 'pi pi-download' },
+    { label: 'Upload',         value: 'pi pi-upload' },
+    { label: 'Busca',          value: 'pi pi-search' },
+    { label: 'Filtro',         value: 'pi pi-filter' },
+    { label: 'Lista',          value: 'pi pi-list' },
+    { label: 'Tabela',         value: 'pi pi-table' },
+    { label: 'Grade',          value: 'pi pi-th-large' },
+    { label: 'Informação',     value: 'pi pi-info-circle' },
+    { label: 'Atenção',        value: 'pi pi-exclamation-triangle' },
+    { label: 'Check',          value: 'pi pi-check-circle' },
+    { label: 'Câmera',         value: 'pi pi-camera' },
+    { label: 'Imagem',         value: 'pi pi-image' },
+    { label: 'Arquivo',        value: 'pi pi-file' },
+    { label: 'Maleta',        value: 'pi pi-briefcase' },
+    { label: 'Ferramentas',     value: 'pi pi-wrench' },
+    { label: 'Impressora',      value: 'pi pi-print' },
+    { label: 'Vídeo',           value: 'pi pi-video' },
+    { label: 'Telefone',        value: 'pi pi-phone' },
+    { label: 'Redes/Wi-Fi',     value: 'pi pi-wifi' },
+    { label: 'Lupa',            value: 'pi pi-search' },
+    { label: 'Informação',      value: 'pi pi-info-circle' },
+    { label: 'Alerta',          value: 'pi pi-exclamation-circle' },
+    { label: 'Estrela',         value: 'pi pi-star' },
+    { label: 'Marcador',        value: 'pi pi-bookmark' },
+    { label: 'Tag',             value: 'pi pi-tag' },
+    { label: 'Grade',           value: 'pi pi-th-large' },
+    { label: 'Lista',           value: 'pi pi-list' },
+    { label: 'Tabela',          value: 'pi pi-table' },
+    { label: 'Código',          value: 'pi pi-code' },
   ];
 
   async ngOnInit() {
@@ -281,6 +285,18 @@ export class CadastrosComponent implements OnInit {
     return this.iconesDisponiveis.find((i) => i.value === value)?.label || value;
   }
 
+  onAreasChange(event: any): void {
+    const selecionadas: string[] = event.value ?? [];
+    const ultimaSelecionada = selecionadas[selecionadas.length - 1];
+    if (ultimaSelecionada === 'Todas') {
+      // "Todas" foi selecionada por último → mantém só ela
+      this.categoriaAreas = ['Todas'];
+    } else if (selecionadas.includes('Todas') && selecionadas.length > 1) {
+      // Outra área foi adicionada junto com "Todas" → remove "Todas"
+      this.categoriaAreas = selecionadas.filter((a) => a !== 'Todas');
+    }
+  }
+
   sortSecoes(event: any) {
     const { field, order } = event;
     this.secoes = [...this.secoes].sort((a: any, b: any) => {
@@ -293,9 +309,16 @@ export class CadastrosComponent implements OnInit {
   sortCategorias(event: any) {
     const { field, order } = event;
     this.categorias = [...this.categorias].sort((a: any, b: any) => {
-      const v1 = field === 'count' ? (a[field] ?? 0) : (a[field] ?? '').toString().toLowerCase();
-      const v2 = field === 'count' ? (b[field] ?? 0) : (b[field] ?? '').toString().toLowerCase();
-      if (typeof v1 === 'number') return (v1 - v2) * order;
+      if (field === 'count') {
+        return ((a[field] ?? 0) - (b[field] ?? 0)) * order;
+      }
+      if (field === 'areas') {
+        const v1 = (a.areas ?? []).join(', ').toLowerCase();
+        const v2 = (b.areas ?? []).join(', ').toLowerCase();
+        return v1.localeCompare(v2) * order;
+      }
+      const v1 = (a[field] ?? '').toString().toLowerCase();
+      const v2 = (b[field] ?? '').toString().toLowerCase();
       return v1.localeCompare(v2) * order;
     });
   }

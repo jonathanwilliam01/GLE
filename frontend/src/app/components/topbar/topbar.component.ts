@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AdminService } from '@services/admin.service';
+import { ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-topbar',
@@ -8,6 +9,7 @@ import { AdminService } from '@services/admin.service';
 })
 export class TopbarComponent {
   public adminService: AdminService = inject(AdminService);
+  public themeService: ThemeService = inject(ThemeService);
 
   showLogin = false;
   user = '';

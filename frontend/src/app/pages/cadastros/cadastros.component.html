@@ -1,11 +1,11 @@
 <div class="cadastros">
   <div class="cadastros-header">
     <h2>Cadastros</h2>
+    <p class="page-subtitle">Gerenciamento de seções e categorias</p>
   </div>
 
   <div *ngIf="carregando" class="loading">
-    <i class="pi pi-spin pi-spinner"></i>
-    <span>Carregando...</span>
+    <app-geosiap-loader></app-geosiap-loader>
   </div>
 
   <div *ngIf="!carregando" class="cadastros-content">
@@ -30,6 +30,8 @@
         styleClass="p-default-table"
         [customSort]="true"
         (onSort)="sortSecoes($event)"
+        [loading]="carregando"
+        [showLoader]="false"
         [scrollable]="true"
         scrollHeight="flex">
         <ng-template pTemplate="header">
@@ -38,6 +40,9 @@
             <th pSortableColumn="sigla">Sigla <p-sortIcon field="sigla"></p-sortIcon></th>
             <th class="col-actions"></th>
           </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+          <table-skeleton class="contents" [cols]="3" [rows]="5"></table-skeleton>
         </ng-template>
         <ng-template pTemplate="body" let-secao>
           <tr>
@@ -84,16 +89,21 @@
         styleClass="p-default-table"
         [customSort]="true"
         (onSort)="sortCategorias($event)"
+        [loading]="carregando"
+        [showLoader]="false"
         [scrollable]="true"
         scrollHeight="flex">
         <ng-template pTemplate="header">
           <tr>
             <th class="col-icon"></th>
             <th pSortableColumn="nome">Nome <p-sortIcon field="nome"></p-sortIcon></th>
-            <th>Áreas</th>
+            <th pSortableColumn="areas">Áreas <p-sortIcon field="areas"></p-sortIcon></th>
             <th pSortableColumn="count" class="col-num">Links <p-sortIcon field="count"></p-sortIcon></th>
             <th class="col-actions"></th>
           </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+          <table-skeleton class="contents" [cols]="5" [rows]="5"></table-skeleton>
         </ng-template>
         <ng-template pTemplate="body" let-cat>
           <tr>
@@ -145,7 +155,7 @@
     </div>
   </div>
   <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" class="p-button-text" (click)="showDialogSecao = false"></button>
+    <button pButton label="Cancelar" class="p-button-text p-button-danger" (click)="showDialogSecao = false"></button>
     <button pButton label="Salvar" [disabled]="!secaoNome.trim()" (click)="salvarSecao()"></button>
   </ng-template>
 </p-dialog>
@@ -196,13 +206,20 @@
         optionLabel="label"
         optionValue="value"
         placeholder="Selecione as áreas"
+        [showToggleAll]="false"
         [appendTo]="'body'"
-        styleClass="w-full">
+        styleClass="w-full"
+        (onChange)="onAreasChange($event)">
+        <ng-template let-item pTemplate="item">
+          <span [class.opacity-40]="(categoriaAreas.includes('Todas') && item.value !== 'Todas') || (!categoriaAreas.includes('Todas') && item.value === 'Todas' && categoriaAreas.length > 0)">
+            {{ item.label }}
+          </span>
+        </ng-template>
       </p-multiSelect>
     </div>
   </div>
   <ng-template pTemplate="footer">
-    <button pButton label="Cancelar" class="p-button-text" (click)="showDialogCategoria = false"></button>
+    <button pButton label="Cancelar" class="p-button-text p-button-danger" (click)="showDialogCategoria = false"></button>
     <button pButton label="Salvar" [disabled]="!categoriaNome.trim()" (click)="salvarCategoria()"></button>
   </ng-template>
 </p-dialog>

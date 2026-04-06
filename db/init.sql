@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS gle_links (
     dt_inclusao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     dt_exclusao TIMESTAMP,
     ativo BOOLEAN DEFAULT TRUE,
+    qtd_cliques int,
     CONSTRAINT fk_categoria FOREIGN KEY (id_categoria)
         REFERENCES gle_categorias(id_categoria)
         ON DELETE CASCADE
