@@ -1,6 +1,7 @@
-import { Component, HostBinding, HostListener, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, HostBinding, HostListener, OnInit, OnDestroy, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
+import { Menu } from 'primeng/menu';
 import { Subscription } from 'rxjs';
 import { CategoriaService } from '@services/categoria.service';
 import { LinkService } from '@services/link.service';
@@ -29,6 +30,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @HostBinding('class.host-view-cards')
   get hostViewCards(): boolean { return this.viewMode === 'cards'; }
 
+  @ViewChild('menuLink') menuLink!: Menu;
+
   get itemsPerPage(): number {
     if (!this.categoriaSelecionada) {
       // 7 itens × 40px = 280px + folga suficiente no card fixo de 490px
@@ -45,6 +48,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onResize(): void {}
 
   showNovoLink = false;
+  showEditLink = false;
+  linkEmEdicao: LinkItem | null = null;
+  menuLinkAtivo: LinkItem | null = null;
+  menuLinkItems: MenuItem[] = [];
 
   getTituloLink(link: LinkItem, secao: string): string {
     if (!this.categoriaSelecionada && this.SECOES_COM_CATEGORIA.includes(secao) && link.categoria_nome) {
@@ -255,6 +262,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       },
     });
+  }
+
+  abrirMenuLink(event: MouseEvent, link: LinkItem): void {
+    this.menuLinkAtivo = link;
+    this.menuLinkItems = [
+      {
+        label: 'Editar',
+        icon: 'pi pi-pencil',
+        command: () => {
+          this.linkEmEdicao = { ...link };
+          this.showEditLink = true;
+        },
+      },
+      link.dt_exclusao
+        ? {
+            label: 'Reativar',
+            icon: 'pi pi-replay',
+            styleClass: 'menu-item-success',
+            command: () => this.reativarLink(link),
+          }
+        : {
+            label: 'Excluir',
+            icon: 'pi pi-trash',
+            styleClass: 'menu-item-danger',
+            command: () => this.excluirLink(link),
+          },
+    ];
+    this.menuLink.toggle(event);
   }
 
   onLinkSalvo(): void {

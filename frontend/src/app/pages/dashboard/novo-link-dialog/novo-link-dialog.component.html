@@ -1,5 +1,5 @@
 <p-dialog
-  header="Novo Link"
+  [header]="linkParaEditar ? 'Editar Link' : 'Novo Link'"
   [visible]="visible"
   (visibleChange)="visibleChange.emit($event)"
   [modal]="true"

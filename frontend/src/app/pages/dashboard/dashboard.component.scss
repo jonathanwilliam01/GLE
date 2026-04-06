@@ -363,8 +363,8 @@
       color: var(--primary-color) !important;
     }
 
-    &.btn-delete {
-      color: #ef4444 !important;
+    &.btn-copy {
+      opacity: 1;
     }
   }
 }
@@ -507,10 +507,13 @@
     align-items: center;
     gap: 8px;
     font-weight: 500;
+    flex: 1;
+    min-width: 0;
 
     i {
       font-size: 12px;
       color: var(--surface-400);
+      flex-shrink: 0;
     }
 
     &:hover {
@@ -530,6 +533,18 @@
     &:hover {
       color: var(--primary-color) !important;
     }
+  }
+}
+
+.accordion-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: auto;
+
+  button.btn-copy {
+    opacity: 1;
   }
 }
 

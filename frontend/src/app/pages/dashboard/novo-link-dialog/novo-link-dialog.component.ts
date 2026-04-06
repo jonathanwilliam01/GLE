@@ -3,7 +3,7 @@ import { MessageService } from 'primeng/api';
 import { LinkService } from '@services/link.service';
 import { CategoriaService } from '@services/categoria.service';
 import { SecaoService } from '@services/secao.service';
-import { Categoria, Secao } from '@helpers/interfaces';
+import { Categoria, LinkItem, Secao } from '@helpers/interfaces';
 
 @Component({
   selector: 'app-novo-link-dialog',
@@ -14,6 +14,7 @@ export class NovoLinkDialogComponent implements OnChanges {
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() linkSalvo = new EventEmitter<void>();
+  @Input() linkParaEditar: LinkItem | null = null;
 
   titulo = '';
   url = '';
@@ -31,10 +32,17 @@ export class NovoLinkDialogComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['visible']?.currentValue === true) {
-      this.titulo = '';
-      this.url = '';
-      this.id_secao = null;
-      this.id_categoria = null;
+      if (this.linkParaEditar) {
+        this.titulo = this.linkParaEditar.titulo;
+        this.url = this.linkParaEditar.url;
+        this.id_secao = this.linkParaEditar.id_secao ?? null;
+        this.id_categoria = this.linkParaEditar.id_categoria ?? null;
+      } else {
+        this.titulo = '';
+        this.url = '';
+        this.id_secao = null;
+        this.id_categoria = null;
+      }
       this.carregarDados();
     }
   }
@@ -63,17 +71,27 @@ export class NovoLinkDialogComponent implements OnChanges {
     }
     this.salvando = true;
     try {
-      await this.linkService.criar({
-        titulo: this.titulo.trim(),
-        link: this.url.trim(),
-        id_secao: this.id_secao,
-        id_categoria: this.id_categoria,
-      });
-      this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link criado com sucesso.' });
+      if (this.linkParaEditar) {
+        await this.linkService.atualizar(this.linkParaEditar.id, {
+          titulo: this.titulo.trim(),
+          link: this.url.trim(),
+          id_secao: this.id_secao,
+          id_categoria: this.id_categoria,
+        });
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link atualizado com sucesso.' });
+      } else {
+        await this.linkService.criar({
+          titulo: this.titulo.trim(),
+          link: this.url.trim(),
+          id_secao: this.id_secao,
+          id_categoria: this.id_categoria,
+        });
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Link criado com sucesso.' });
+      }
       this.visibleChange.emit(false);
       this.linkSalvo.emit();
     } catch {
-      this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao criar link.' });
+      this.messageService.add({ severity: 'error', summary: 'Erro', detail: this.linkParaEditar ? 'Falha ao atualizar link.' : 'Falha ao criar link.' });
     } finally {
       this.salvando = false;
     }

@@ -121,28 +121,19 @@
                 <button
                   pButton
                   icon="pi pi-copy"
-                  class="p-button-sm p-button-text"
+                  class="p-button-sm p-button-text btn-copy"
                   pTooltip="Copiar Link"
                   tooltipPosition="top"
                   (click)="copiarLink(link)"
                 ></button>
                 <button
-                  *ngIf="adminService.isAdmin && link.dt_exclusao"
+                  *ngIf="adminService.isAdmin"
                   pButton
-                  icon="pi pi-replay"
-                  class="p-button-sm p-button-text p-button-success"
-                  pTooltip="Reativar Link"
+                  icon="pi pi-ellipsis-v"
+                  class="p-button-sm p-button-text btn-menu"
+                  pTooltip="Opções"
                   tooltipPosition="top"
-                  (click)="$event.stopPropagation(); reativarLink(link)"
-                ></button>
-                <button
-                  *ngIf="adminService.isAdmin && !link.dt_exclusao"
-                  pButton
-                  icon="pi pi-trash"
-                  class="p-button-sm p-button-text p-button-danger btn-delete"
-                  pTooltip="Excluir Link"
-                  tooltipPosition="top"
-                  (click)="$event.stopPropagation(); excluirLink(link)"
+                  (click)="$event.stopPropagation(); abrirMenuLink($event, link)"
                 ></button>
             </div>
           </div>
@@ -196,35 +187,28 @@
               <i class="pi pi-external-link"></i>
               {{ getTituloLink(link, secao) }}
             </a>
-            <span *ngIf="adminService.isAdmin && link.dt_exclusao" class="badge-excluido">
-              <i class="pi pi-trash"></i> Excluído
-            </span>
-            <button
-              pButton
-              icon="pi pi-copy"
-              class="p-button-sm p-button-text"
-              pTooltip="Copiar Link"
-              tooltipPosition="top"
-              (click)="copiarLink(link)"
-            ></button>
-            <button
-              *ngIf="adminService.isAdmin && link.dt_exclusao"
-              pButton
-              icon="pi pi-replay"
-              class="p-button-sm p-button-text p-button-success"
-              pTooltip="Reativar Link"
-              tooltipPosition="top"
-              (click)="$event.stopPropagation(); reativarLink(link)"
-            ></button>
-            <button
-              *ngIf="adminService.isAdmin && !link.dt_exclusao"
-              pButton
-              icon="pi pi-trash"
-              class="p-button-sm p-button-text p-button-danger btn-delete"
-              pTooltip="Excluir Link"
-              tooltipPosition="top"
-              (click)="$event.stopPropagation(); excluirLink(link)"
-            ></button>
+            <div class="accordion-actions">
+              <span *ngIf="adminService.isAdmin && link.dt_exclusao" class="badge-excluido">
+                <i class="pi pi-trash"></i> Excluído
+              </span>
+              <button
+                pButton
+                icon="pi pi-copy"
+                class="p-button-sm p-button-text btn-copy"
+                pTooltip="Copiar Link"
+                tooltipPosition="top"
+                (click)="copiarLink(link)"
+              ></button>
+              <button
+                *ngIf="adminService.isAdmin"
+                pButton
+                icon="pi pi-ellipsis-v"
+                class="p-button-sm p-button-text btn-menu"
+                pTooltip="Opções"
+                tooltipPosition="top"
+                (click)="$event.stopPropagation(); abrirMenuLink($event, link)"
+              ></button>
+            </div>
           </div>
           <div *ngIf="getLinksFiltrados(secao).length === 0" class="accordion-empty">
             <i class="pi pi-inbox"></i>
@@ -240,5 +224,13 @@
   [(visible)]="showNovoLink"
   (linkSalvo)="onLinkSalvo()">
 </app-novo-link-dialog>
+
+<app-novo-link-dialog
+  [(visible)]="showEditLink"
+  [linkParaEditar]="linkEmEdicao"
+  (linkSalvo)="onLinkSalvo()">
+</app-novo-link-dialog>
+
+<p-menu #menuLink [popup]="true" [model]="menuLinkItems" appendTo="body"></p-menu>
 
 <p-confirmDialog></p-confirmDialog>

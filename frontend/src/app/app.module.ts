@@ -41,7 +41,7 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { NovaCategoriaDialogComponent } from './components/sidebar/nova-categoria-dialog/nova-categoria-dialog.component';
 import { NovaSecaoDialogComponent } from './components/sidebar/nova-secao-dialog/nova-secao-dialog.component';
-import { NovoLinkDialogComponent } from './pages/dashboard/novo-link-dialog.component';
+import { NovoLinkDialogComponent } from './pages/dashboard/novo-link-dialog/novo-link-dialog.component';
 import { CadastrosComponent } from './pages/cadastros/cadastros.component';
 import { GeosiapLoaderComponent } from './components/geosiap-loader/geosiap-loader.component';
 import { TableSkeletonComponent } from './components/table-skeleton/table-skeleton.component';

@@ -1,6 +1,6 @@
 <div class="flex align-items-center justify-content-between h-full mx-3">
   <div class="flex h-full gap-2 align-items-center">
-    <span class="font-bold text-color">GLE - Gestão de Link Embras</span>
+    <span class="font-bold text-color">GLE - Gestão de Links Embras</span>
   </div>
   <div class="flex gap-2 align-items-center">
     <button
@@ -23,14 +23,14 @@
 
 <p-dialog header="Login Admin" [(visible)]="showLogin" [modal]="true" [style]="{width: '340px'}" [closable]="true" [draggable]="false">
   <div class="flex flex-column gap-3 mt-2">
-    <span class="p-float-label">
+    <div class="flex flex-column gap-1">
+      <label for="adminUser" class="text-sm font-medium">Usuário</label>
       <input id="adminUser" pInputText [(ngModel)]="user" class="w-full" />
-      <label for="adminUser">Usuário</label>
-    </span>
-    <span class="p-float-label">
+    </div>
+    <div class="flex flex-column gap-1">
+      <label for="adminSenha" class="text-sm font-medium">Senha</label>
       <input id="adminSenha" type="password" pInputText [(ngModel)]="senha" class="w-full" (keyup.enter)="doLogin()" />
-      <label for="adminSenha">Senha</label>
-    </span>
+    </div>
     <small *ngIf="loginError" class="p-error">Credenciais inválidas.</small>
   </div>
   <ng-template pTemplate="footer">
