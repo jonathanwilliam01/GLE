@@ -16,7 +16,7 @@ export class LayoutComponent {
     this.collapseStatus = event;
     const gridTemplateColumns = this.collapseStatus
       ? '72px auto'
-      : '280px auto';
+      : '320px auto';
     if (this.master) {
       this.renderer.setStyle(
         this.master.nativeElement,

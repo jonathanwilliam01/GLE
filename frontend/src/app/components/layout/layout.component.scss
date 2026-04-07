@@ -1,7 +1,7 @@
 #master {
   height: 100vh;
   display: grid;
-  grid-template-columns: 280px auto;
+  grid-template-columns: 320px auto;
   grid-template-rows: 72px 1fr 36px;
   grid-template-areas:
     "sidebar header"
@@ -45,4 +45,10 @@
 .footer {
   position: relative;
   grid-area: footer;
+}
+
+:host ::ng-deep .p-scrolltop-sticky {
+  position: fixed;
+  margin-bottom: 1.5rem;
+  margin-right: 0.5rem;
 }

@@ -24,6 +24,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuModule } from 'primeng/menu';
 import { AccordionModule } from 'primeng/accordion';
 import { SkeletonModule } from 'primeng/skeleton';
+import { ScrollTopModule } from 'primeng/scrolltop';
 
 // Serviços PrimeNG
 import { MessageService } from 'primeng/api';
@@ -92,6 +93,7 @@ import { SidebarMenu } from './components/sidebar/sidebar.menu';
     MenuModule,
     AccordionModule,
     SkeletonModule,
+    ScrollTopModule,
   ],
   providers: [
     MessageService,
